@@ -1,11 +1,16 @@
 # components/content/
 > L2 | Parent: src/components/CLAUDE.md
 
-Server components for rendering content pages — diary and weekly entries. No `"use client"`, no client state. Consumes `Entry` type from `@/lib/content`.
-
 ## Members
 
-EntryList.tsx: List page rendering a scrollable grid of entry cards with alternating pink/orange palette
-EntryPage.tsx: Single entry page rendering markdown HTML content with ARCHIVE/HOME navigation
+EntryList.tsx: Chronological list renderer — title, date, summary per entry, shared by diary + weekly list pages
+EntryPage.tsx: Single entry renderer — back-nav, meta header, rendered markdown body via `diary-content` CSS class
 
-[PROTOCOL]: Update this file on any member change, then check parent CLAUDE.md
+## Architecture Notes
+
+- Both components are server components (no `"use client"`)
+- EntryList links to `/${type}/${slug}`, EntryPage links back to `backHref`
+- Typography uses the `diary-content` CSS class from globals.css for markdown rendering (shared across diary and weekly)
+- Design tokens: `font-vt323` for headings, `neon-pink`/`neon-coral` for accents, `glass-border`/`glass-bg` for hover states
+
+[PROTOCOL]: Update this file when components are added/removed, then check parent CLAUDE.md
