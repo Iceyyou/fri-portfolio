@@ -278,6 +278,11 @@ body {
  * TYPEWRITER + QUOTE
  * -------------------------------------------------------------------------- */
 
+@keyframes matrix-fall {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
 .typewriter::after {
   content: '_';
   animation: blink 1s step-start infinite;

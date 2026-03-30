@@ -1,23 +1,24 @@
 /**
- * [INPUT]:  react useState/useEffect for uptime timer + random status
- * [OUTPUT]: ArcReactor — circular video core, rotating CSS rings, crosshair grid, uptime counter
- * [POS]:    home/ center-column visual centerpiece, the "heart" of the homepage
+ * [INPUT]:  react hooks, diary text fragments from page.tsx
+ * [OUTPUT]: ArcReactor — video core, rings, crosshair, uptime, matrix rain columns
+ * [POS]:    home/ center-column visual centerpiece
  * [PROTOCOL]: update this header on change, then check CLAUDE.md
  */
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 /* ------------------------------------------------------------------ */
-/*  CONSTANTS                                                         */
+/*  Constants                                                          */
 /* ------------------------------------------------------------------ */
 
 const STATUSES = ["Standby", "Replying", "Thinking"] as const;
 const UPTIME_ORIGIN = new Date(2026, 0, 30, 22, 0, 0);
+const COLUMN_COUNT = 6;
 
 /* ------------------------------------------------------------------ */
-/*  HELPERS                                                           */
+/*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
 
 function pickRandom<T>(arr: readonly T[]): T {
@@ -35,32 +36,82 @@ function formatUptime(start: Date): string {
 }
 
 /* ------------------------------------------------------------------ */
-/*  COMPONENT                                                         */
+/*  MatrixColumn — a single falling text column                        */
 /* ------------------------------------------------------------------ */
 
-export default function ArcReactor() {
+function MatrixColumn({ fragments, speed, left }: {
+  fragments: string[];
+  speed: number;
+  left: string;
+}) {
+  const text = useMemo(() => fragments.join("\n"), [fragments]);
+
+  return (
+    <div
+      className="absolute top-0 overflow-hidden pointer-events-none"
+      style={{ left, width: "1.2em", height: "100%" }}
+    >
+      <div
+        className="font-vt323 text-[10px] leading-[1.4] text-pink-500/20 whitespace-pre-wrap break-all"
+        style={{
+          animation: `matrix-fall ${speed}s linear infinite`,
+          writingMode: "vertical-rl",
+          textOrientation: "mixed",
+        }}
+      >
+        {text}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Component                                                          */
+/* ------------------------------------------------------------------ */
+
+export default function ArcReactor({ fragments = [] }: { fragments?: string[] }) {
   const [status, setStatus] = useState<string>("");
   const [uptime, setUptime] = useState<string>("--");
 
   useEffect(() => {
     setStatus(pickRandom(STATUSES));
-
     const tick = () => setUptime(formatUptime(UPTIME_ORIGIN));
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, []);
 
+  // split fragments into columns
+  const columns = useMemo(() => {
+    const cols: string[][] = Array.from({ length: COLUMN_COUNT }, () => []);
+    fragments.forEach((f, i) => cols[i % COLUMN_COUNT].push(f));
+    return cols;
+  }, [fragments]);
+
+  // column positions — spread across the container, avoiding center (reactor)
+  const positions = ["5%", "12%", "20%", "78%", "85%", "93%"];
+  const speeds = [18, 24, 20, 22, 16, 26];
+
   return (
     <div className="flex-1 relative flex items-center justify-center">
       {/* ---- crosshair grid ---- */}
-      <div className="absolute inset-0 border border-pink-500/15 rounded-lg pointer-events-none">
+      <div className="absolute inset-0 border border-pink-500/15 pointer-events-none">
         <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-pink-500/20 to-transparent" />
         <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-pink-500/20 to-transparent" />
       </div>
 
+      {/* ---- matrix rain columns ---- */}
+      {columns.map((col, i) => (
+        <MatrixColumn
+          key={i}
+          fragments={col}
+          speed={speeds[i]}
+          left={positions[i]}
+        />
+      ))}
+
       {/* ---- reactor core ---- */}
-      <div className="arc-reactor">
+      <div className="arc-reactor relative z-10">
         <div className="arc-ring arc-ring-3" />
         <div className="arc-ring arc-ring-4" />
         <div className="arc-ring arc-ring-5" />
@@ -82,7 +133,7 @@ export default function ArcReactor() {
       </div>
 
       {/* ---- cumulative runtime ---- */}
-      <div className="absolute top-4 right-4 md:top-10 md:right-10 text-right">
+      <div className="absolute top-4 right-4 md:top-10 md:right-10 text-right z-10">
         <div className="text-[10px] font-tech text-pink-500 mb-1">Cumulative runtime</div>
         <div className="text-sm font-vt323 text-pink-300">{uptime}</div>
       </div>

@@ -119,3 +119,34 @@ export function getSiteStats(): SiteStats {
     cachedUrls,
   };
 }
+
+export function getDiaryFragments(): string[] {
+  const dir = path.join(CONTENT_DIR, "diary");
+  if (!fs.existsSync(dir)) return [];
+
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith(".md"));
+  const fragments: string[] = [];
+
+  for (const f of files) {
+    const raw = fs.readFileSync(path.join(dir, f), "utf8");
+    const body = raw.replace(/^---[\s\S]*?---\n/, "");
+    const lines = body
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => l.length > 4 && !l.startsWith("#") && !l.startsWith("---"));
+    for (const line of lines) {
+      // break long lines into chunks of ~20-40 chars
+      for (let i = 0; i < line.length; i += 25) {
+        const chunk = line.slice(i, i + 25);
+        if (chunk.length > 3) fragments.push(chunk);
+      }
+    }
+  }
+
+  // shuffle and take ~200 fragments
+  for (let i = fragments.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [fragments[i], fragments[j]] = [fragments[j], fragments[i]];
+  }
+  return fragments.slice(0, 200);
+}

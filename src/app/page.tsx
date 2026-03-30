@@ -13,12 +13,13 @@ import ArcReactor from "@/components/home/ArcReactor";
 import { Terminal } from "@/components/home/Terminal";
 import { Diagnostics } from "@/components/home/Diagnostics";
 import { CoreDirectives } from "@/components/home/CoreDirectives";
-import { getSiteStats } from "@/lib/stats";
+import { getSiteStats, getDiaryFragments } from "@/lib/stats";
 import { getEntries } from "@/lib/content";
 
 export default async function Home() {
   const stats = getSiteStats();
   const weeklyEntries = await getEntries("weekly");
+  const diaryFragments = getDiaryFragments();
 
   return (
     <div className="flex flex-col overflow-hidden h-screen w-screen">
@@ -47,7 +48,7 @@ export default async function Home() {
             id="session-column"
             className="col-span-12 md:col-span-6 flex flex-col min-h-0 relative order-1 md:order-2"
           >
-            <ArcReactor />
+            <ArcReactor fragments={diaryFragments} />
             <Terminal stats={stats} />
           </div>
 
