@@ -68,7 +68,7 @@ export function SystemHeader({ totalEntries, totalWords }: SystemHeaderProps) {
       <div className="flex items-center gap-3 md:gap-12 font-tech text-[10px] md:text-xs shrink-0" style={{ color: 'var(--text-accent-soft)' }}>
         {/* status dot */}
         <div className="flex items-center gap-2">
-          <span className="status-dot w-2 h-2 bg-green-500 animate-pulse shrink-0" />
+          <span className="status-dot w-2 h-2 animate-pulse shrink-0" style={{ background: 'var(--text-status)' }} />
           <span className="hidden sm:inline">SYSTEM ONLINE</span>
         </div>
 
