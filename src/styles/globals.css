@@ -239,28 +239,28 @@ body {
 
 /* ---- neon shimmer — thinking/status light sweep ---- */
 .neon-shimmer {
+  --shimmer-base: rgba(236, 72, 153, 0.4);
+  --shimmer-peak: rgba(255, 200, 230, 1);
   background: linear-gradient(
     90deg,
-    rgba(236, 72, 153, 0.4) 0%,
-    rgba(236, 72, 153, 0.4) 35%,
-    rgba(236, 72, 153, 0.9) 45%,
-    rgba(255, 200, 230, 1) 50%,
-    rgba(236, 72, 153, 0.9) 55%,
-    rgba(236, 72, 153, 0.4) 65%,
-    rgba(236, 72, 153, 0.4) 100%
+    var(--shimmer-base) 0%,
+    var(--shimmer-base) 44%,
+    var(--shimmer-peak) 50%,
+    var(--shimmer-base) 56%,
+    var(--shimmer-base) 100%
   );
-  background-size: 300% 100%;
+  background-size: 250% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: neon-sweep 4s ease-in-out infinite;
+  animation: neon-sweep 6s linear infinite;
   text-shadow: none;
 }
 
 @keyframes neon-sweep {
-  0%   { background-position: 100% 0; }
-  30%  { background-position: 0% 0; }
-  100% { background-position: 0% 0; }
+  0%   { background-position: -50% 0; }
+  40%  { background-position: 150% 0; }
+  100% { background-position: 150% 0; }
 }
 
 .arc-ring {
