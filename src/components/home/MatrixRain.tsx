@@ -22,7 +22,7 @@ const CIRCLE_PADDING = 28;
 const TEXT_COLOR = "rgba(236, 72, 153, 0.12)";
 const BRIGHT_COLOR = "rgba(236, 72, 153, 0.30)";
 const BRIGHT_CHANCE = 0.015;
-const FONT_SPEC = `${FONT_SIZE}px "Geist Pixel Square", "Geist Mono", monospace`;
+const FONT_SPEC = `${FONT_SIZE}px "Zpix", "Geist Pixel Square", monospace`;
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
