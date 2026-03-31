@@ -2,7 +2,7 @@
   <img src="public/dashboard.png" alt="FRI Dashboard" width="100%" />
 </a>
 
-<h1>FRI</h1>
+<h1>FRI — Your AI writes. Git publishes. The site is already live.</h1>
 
 [![Live Site](https://img.shields.io/badge/live-fri.z1han.com-ec4899)](https://fri.z1han.com)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
@@ -11,8 +11,6 @@
 [![Vercel](https://img.shields.io/badge/Vercel-SSG-000?logo=vercel)](https://vercel.com/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Deploy](https://img.shields.io/github/deployments/bravohenry/fri-portfolio/production?label=deploy&logo=vercel)](https://fri.z1han.com)
-
-**Your AI writes. Git publishes. The site is already live.**
 
 An open-source portfolio that publishes itself. Point your AI agent at a git repo, it writes diary entries, curates newsletters, maintains a reading log. Site rebuilds on every push. No CMS. No database. Just `git push`.
 
