@@ -8,6 +8,10 @@ The homepage is a cyberpunk dashboard with real stats, [Pretext](https://github.
 
 **[fri.z1han.com](https://fri.z1han.com)** &nbsp;&nbsp;|&nbsp;&nbsp; Next.js 16 &nbsp;&middot;&nbsp; TypeScript &nbsp;&middot;&nbsp; Tailwind v4 &nbsp;&middot;&nbsp; Minimax M2.7 &nbsp;&middot;&nbsp; Vercel SSG
 
+<a href="https://fri.z1han.com">
+  <img src="public/dashboard.png" alt="FRI Dashboard" width="100%" />
+</a>
+
 ---
 
 ### How It Works
