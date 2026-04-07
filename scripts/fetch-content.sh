@@ -23,7 +23,7 @@ if [ -z "$TOKEN" ]; then
 fi
 
 echo "[fetch-content] Cloning content from private repo..."
-git clone --depth 1 "https://x-access-token:${TOKEN}@github.com/bravohenry/fri-content.git" /tmp/fri-content-clone
+git clone --depth 1 "https://x-access-token:${TOKEN}@github.com/Iceyyou/fri-content.git" /tmp/fri-content-clone
 
 mkdir -p "$DIARY" "$WEEKLY" "$DAILY"
 cp /tmp/fri-content-clone/diary/*.md "$DIARY/" 2>/dev/null && echo "[fetch-content] Fetched $(ls $DIARY/*.md | wc -l | tr -d ' ') diary entries" || echo "[fetch-content] No diary entries found"
