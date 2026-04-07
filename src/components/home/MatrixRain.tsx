@@ -159,8 +159,8 @@ export function MatrixRain({ fragments, circle }: Props) {
     const lines = buildLines(prepared, w, h, cx, cy, r, offsetRef.current);
 
     const styles = getComputedStyle(document.documentElement);
-    const textColor = styles.getPropertyValue('--matrix-text').trim() || "rgba(236,72,153,0.10)";
-    const brightColor = styles.getPropertyValue('--matrix-bright').trim() || "rgba(236,72,153,0.19)";
+    const textColor = styles.getPropertyValue('--matrix-text').trim() || "rgba(0,255,136,0.6)";  // 改成绿色,透明度提高到 0.6
+    const brightColor = styles.getPropertyValue('--matrix-bright').trim() || "rgba(0,255,136,0.9)";  // 高亮改成 0.9
 
     for (const line of lines) {
       if (line.y < -LINE_HEIGHT || line.y > h + LINE_HEIGHT) continue;
