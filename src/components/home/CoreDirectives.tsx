@@ -163,78 +163,20 @@ export function CoreDirectives() {
         </div>
       </div>
 
-      {/* ---- Footer: social links ---- */}
+      {/* ---- Footer: diary link ---- */}
       <div
         className="mt-4 pt-3 border-t"
         style={{ borderColor: 'var(--border-divider)' }}
       >
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-1.5">
-            <a
-              href="https://z1han.com"
-              target="_blank"
-              rel="noopener"
-              className="font-tech text-xs transition-colors py-1 flex items-center"
-              style={{ color: 'var(--text-link)' }}
-            >
-              @z1han
-            </a>
-            <Link
-              href="/diary"
-              className="font-vt323 text-[11px] transition-colors"
-              style={{ color: 'var(--text-link-easter)' }}
-              aria-label="日记"
-            >
-              日记
-            </Link>
-          </div>
-          <div className="flex gap-1">
-            <a
-              href="https://x.com/Bravohenry_"
-              target="_blank"
-              rel="noopener"
-              className="p-1.5 transition-all hover:opacity-80"
-              style={{ color: 'var(--text-accent)' }}
-              aria-label="X (Twitter)"
-            >
-              <img
-                src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/x.svg"
-                className="pa-icon w-4 h-4 inline-block"
-                alt=""
-                aria-hidden="true"
-              />
-            </a>
-            <a
-              href="https://www.linkedin.com/in/zihanhwang/"
-              target="_blank"
-              rel="noopener"
-              className="p-1.5 transition-all hover:opacity-80"
-              style={{ color: 'var(--text-accent)' }}
-              aria-label="LinkedIn"
-            >
-              <img
-                src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/linkedin.svg"
-                className="pa-icon w-4 h-4 inline-block"
-                alt=""
-                aria-hidden="true"
-              />
-            </a>
-            <a
-              href="https://github.com/bravohenry"
-              target="_blank"
-              rel="noopener"
-              className="p-1.5 transition-all hover:opacity-80"
-              style={{ color: 'var(--text-accent)' }}
-              aria-label="GitHub"
-            >
-              <img
-                src="https://unpkg.com/pixelarticons@1.8.1/svg/github.svg"
-                className="pa-icon w-4 h-4 inline-block"
-                alt=""
-                aria-hidden="true"
-              />
-            </a>
-          </div>
+        <div className="flex justify-start items-center">
+          <Link
+            href="/diary"
+            className="font-vt323 text-[11px] transition-colors"
+            style={{ color: 'var(--text-link-easter)' }}
+            aria-label="日记"
+          >
+            日记
+          </Link>
         </div>
       </div>
     </TechBorder>

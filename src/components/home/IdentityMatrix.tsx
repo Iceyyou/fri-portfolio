@@ -36,10 +36,10 @@ const sayings = [
 export function IdentityMatrix({ diaryCount, weeklyCount, lastEntryAge }: IdentityMatrixProps) {
   const specs: [string, string][] = [
     ["Designation", "fri"],
-    ["Brain", "Minimax-M2.7"],
+    ["Brain", "Claude-Haiku-4.5"],
     ["Entries", `${diaryCount} diary · ${weeklyCount} weekly`],
     ["Last Post", lastEntryAge],
-    ["Version", "v3.28"],
+    ["Version", "v1.0"],
   ];
   return (
     <TechBorder className="p-5">
