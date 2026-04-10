@@ -15,9 +15,10 @@ const colors = {
 /**
  * Workflow:
  * 1. Get raw digest from follow-builders
- * 2. For podcasts: Extract key insights from transcript
- * 3. For tweets: Generate English summary + Chinese translation using Ollama
- * 4. Format with proper structure
+ * 2. For podcasts: Extract & translate key insights
+ * 3. For blogs: Fetch and process blog content
+ * 4. For tweets: Keep English only (no translation)
+ * 5. Format with proper structure
  */
 
 // Ollama configuration
@@ -60,16 +61,79 @@ async function callOllama(prompt, text, retries = 2) {
 }
 
 /**
- * Generate Chinese translation using Ollama
+ * Generate Chinese translation for podcast insights using Ollama
  */
 async function generateChineseSummary(text) {
-  const prompt = `用中文总结以下内容的核心要点，2-4 句话。保留英文术语和人名的英文原文，不要翻译。不要包含"总结："或其他前缀，直接给出总结内容。`;
+  const prompt = `用中文总结以下内容的核心要点，1-2 句话。保留英文术语和人名的英文原文，不要翻译。不要包含"总结："或其他前缀，直接给出总结内容。`;
   
   const result = await callOllama(prompt, text, 2);
   if (result) return result;
   
   // Fallback: return original text if translation fails
   return text;
+}
+
+/**
+ * Extract and clean podcast key insights with Chinese translation
+ */
+async function extractKeyInsightsWithTranslation(transcript) {
+  if (!transcript || transcript.length === 0) return [];
+  
+  const insights = extractKeyInsights(transcript);
+  const result = [];
+  
+  for (const insight of insights) {
+    const zhInsight = await generateChineseSummary(insight);
+    result.push({
+      en: insight,
+      zh: zhInsight
+    });
+  }
+  
+  return result;
+}
+
+/**
+ * Fetch blog content from URL
+ */
+async function fetchBlogContent(url) {
+  try {
+    const response = await fetch(url, {
+      timeout: 10000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    });
+    
+    if (!response.ok) return null;
+    
+    const html = await response.text();
+    // Extract main content - simple heuristic
+    const contentMatch = html.match(/<article[^>]*>(.*?)<\/article>/is) || 
+                        html.match(/<main[^>]*>(.*?)<\/main>/is) ||
+                        html.match(/<div class="[^"]*content[^"]*"[^>]*>(.*?)<\/div>/is);
+    
+    if (!contentMatch) return null;
+    
+    // Remove HTML tags and decode entities
+    let text = contentMatch[1]
+      .replace(/<script[^>]*>.*?<\/script>/gis, '')
+      .replace(/<style[^>]*>.*?<\/style>/gis, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    return text.substring(0, 300); // First 300 chars
+  } catch (e) {
+    console.error(`Failed to fetch blog: ${e.message}`);
+    return null;
+  }
 }
 
 /**
@@ -148,61 +212,46 @@ async function generateDailyDigest() {
 
     const rawDigest = JSON.parse(rawOutput);
 
-    console.log(`${colors.blue}✨ Processing podcasts and tweets...${colors.reset}`);
+    console.log(`${colors.blue}✨ Processing podcasts, blogs, and tweets...${colors.reset}`);
     
-    // Process podcasts
+    // Process podcasts with Chinese translations
     if (rawDigest.podcasts) {
-      rawDigest.podcasts = rawDigest.podcasts.map((item) => ({
-        ...item,
-        keyInsights: extractKeyInsights(item.transcript || ''),
-      }));
+      console.log(`${colors.blue}🎙️  Translating podcast insights...${colors.reset}`);
+      const processedPodcasts = [];
+      for (const item of rawDigest.podcasts) {
+        const keyInsights = await extractKeyInsightsWithTranslation(item.transcript || '');
+        processedPodcasts.push({
+          ...item,
+          keyInsights
+        });
+      }
+      rawDigest.podcasts = processedPodcasts;
     }
 
-    // Process tweets with translations
-    if (rawDigest.x && rawDigest.x.length > 0) {
-      console.log(`${colors.blue}🌐 Translating tweets to Chinese using Ollama...${colors.reset}`);
-      
-      // Collect all tweet summaries for batch translation
-      const summariesToTranslate = [];
-      
-      rawDigest.x.forEach((builder) => {
-        if (builder.tweets) {
-          builder.tweets.forEach((tweet) => {
-            const summary = generateTweetSummary(tweet.text);
-            summariesToTranslate.push(summary);
-          });
+    // Process blogs
+    if (rawDigest.blogs && rawDigest.blogs.length > 0) {
+      console.log(`${colors.blue}📰 Fetching blog content...${colors.reset}`);
+      for (const blog of rawDigest.blogs) {
+        if (blog.url) {
+          const content = await fetchBlogContent(blog.url);
+          if (content) {
+            blog.preview = content;
+          }
         }
-      });
-
-      // Batch translate all summaries
-      const translatedSummaries = [];
-      for (const summary of summariesToTranslate) {
-        try {
-          const translated = await generateChineseSummary(summary);
-          translatedSummaries.push(translated);
-          console.log(`${colors.green}✓${colors.reset} Translated: ${summary.substring(0, 40)}...`);
-        } catch (e) {
-          console.error(`${colors.yellow}⚠️  Translation failed:${colors.reset}`, e.message);
-          translatedSummaries.push(summary); // Fallback
-        }
-        
-        // Delay between requests to avoid overwhelming Ollama
-        await new Promise((resolve) => setTimeout(resolve, 100));
       }
+    }
 
-      console.log(`${colors.green}✓ Completed ${translatedSummaries.length} translations${colors.reset}`);
-
-      // Update tweets with translations
-      let translationIdx = 0;
+    // Tweets: No translation, keep English only
+    if (rawDigest.x && rawDigest.x.length > 0) {
+      console.log(`${colors.blue}𝕏 Processing tweets (English only)...${colors.reset}`);
       rawDigest.x = rawDigest.x.map((builder) => ({
         ...builder,
         tweets: builder.tweets.map((tweet) => {
-          const enSummary = generateTweetSummary(tweet.text);
-          const zhSummary = translatedSummaries[translationIdx++] || enSummary;
+          const summary = generateTweetSummary(tweet.text);
+          console.log(`${colors.green}✓${colors.reset} Processed: ${summary.substring(0, 40)}...`);
           return {
             ...tweet,
-            enSummary,
-            zhSummary,
+            summary,
           };
         }),
       }));
@@ -230,24 +279,45 @@ async function generateDailyDigest() {
 
 /**
  * Format digest as markdown
- * UI language: English only
- * Content: English + Chinese (collapsed)
+ * New features: Blogs support, better podcast insights, tweet links open in new tabs
+ * Time format: yyyy-mm-dd hh:mm:ss UTC+8
  */
 function getBeijingTime() {
   const now = new Date();
   const bjTime = new Date(now.getTime() + 8 * 60 * 60 * 1000); // UTC+8
-  const yy = String(bjTime.getUTCFullYear()).slice(2);
+  const yyyy = String(bjTime.getUTCFullYear());
   const mm = String(bjTime.getUTCMonth() + 1).padStart(2, '0');
   const dd = String(bjTime.getUTCDate()).padStart(2, '0');
   const hh = String(bjTime.getUTCHours()).padStart(2, '0');
+  const mi = String(bjTime.getUTCMinutes()).padStart(2, '0');
   const ss = String(bjTime.getUTCSeconds()).padStart(2, '0');
-  return `${yy}-${mm}-${dd}-${hh}-${ss} UTC+8`;
+  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss} UTC+8`;
 }
 
 function formatDigestMarkdown(digest) {
   let markdown = `# AI Builders Digest\n\n`;
   markdown += `Generated: ${getBeijingTime()}\n\n`;
   markdown += `---\n\n`;
+
+  // === SECTION 0: BLOGS ===
+  if (digest.blogs && digest.blogs.length > 0) {
+    markdown += `## 📰 Blogs\n\n`;
+
+    digest.blogs.forEach((item) => {
+      const title = item.title || 'Blog Post';
+      const url = item.url || '#';
+      const preview = item.preview || '';
+
+      markdown += `### ${title}\n\n`;
+
+      if (preview) {
+        markdown += `${preview}...\n\n`;
+      }
+
+      markdown += `[Read More](${url}){target="_blank"}\n\n`;
+      markdown += `---\n\n`;
+    });
+  }
 
   // === SECTION 1: PODCASTS ===
   if (digest.podcasts && digest.podcasts.length > 0) {
@@ -262,16 +332,25 @@ function formatDigestMarkdown(digest) {
       markdown += `### ${title}\n\n`;
       markdown += `**Source:** ${source}\n\n`;
 
-      // Key insights section - English UI
+      // Key insights with bilingual support
       if (insights.length > 0) {
         markdown += `**Key Insights:**\n\n`;
         insights.forEach((insight) => {
-          markdown += `- ${insight}\n`;
+          if (typeof insight === 'object' && insight.en) {
+            // Bilingual format
+            markdown += `- ${insight.en}\n`;
+            if (insight.zh && insight.zh !== insight.en) {
+              markdown += `  > ${insight.zh}\n`;
+            }
+          } else {
+            // String format fallback
+            markdown += `- ${insight}\n`;
+          }
         });
         markdown += `\n`;
       }
 
-      markdown += `[Watch](${url})\n\n`;
+      markdown += `[Watch](${url}){target="_blank"}\n\n`;
       markdown += `---\n\n`;
     });
   }
@@ -326,22 +405,13 @@ function formatDigestMarkdown(digest) {
 }
 
 function formatTweetEntry(tweet, index) {
-  const enSummary = tweet.enSummary || generateTweetSummary(tweet.text);
-  const zhSummary = tweet.zhSummary || enSummary;
+  const summary = tweet.summary || generateTweetSummary(tweet.text);
   const url = tweet.url || `https://x.com/status/${tweet.id || 'unknown'}`;
 
-  let entry = `**${index}.** ${enSummary}\n\n`;
+  let entry = `**${index}.** ${summary}\n\n`;
 
-  // Chinese translation (collapsed by default, only if different)
-  if (zhSummary !== enSummary) {
-    entry += `<details>\n`;
-    entry += `<summary>中文</summary>\n\n`;
-    entry += `${zhSummary}\n\n`;
-    entry += `</details>\n\n`;
-  }
-
-  // Link
-  entry += `[View](${url})\n\n`;
+  // Link with target="_blank" for new tab
+  entry += `[View](${url}){target="_blank"}\n\n`;
 
   return entry;
 }
