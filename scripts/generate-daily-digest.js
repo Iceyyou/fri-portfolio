@@ -22,10 +22,19 @@ const colors = {
 
 // Ollama configuration
 const OLLAMA_BASE_URL = 'http://localhost:11434';
-const OLLAMA_MODEL = 'mistral';
+// 轻量模型选项（按 CPU 占用从低到高排列）：
+// - 'qwen2:1.5b'  : 超轻（推荐用于翻译）
+// - 'phi2'         : 轻量
+// - 'neural-chat'  : 中等
+// - 'mistral'      : 中等（原默认）
+// - 'llama2'       : 较重
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'qwen2:1.5b';
+
+console.log(`\x1b[36m[Config] Using Ollama model: ${OLLAMA_MODEL}\x1b[0m`);
 
 /**
- * Call Ollama API
+ * Call Ollama API with optimizations for lightweight models
+ * 轻量模型参数优化，降低 CPU 占用和提高速度
  */
 async function callOllama(prompt, text, retries = 2) {
   for (let attempt = 0; attempt < retries; attempt++) {
@@ -37,13 +46,17 @@ async function callOllama(prompt, text, retries = 2) {
           model: OLLAMA_MODEL,
           prompt: `${prompt}\n\nContent:\n${text}\n\nResponse:`,
           stream: false,
-          temperature: 0.3
+          temperature: 0.2,      // 降低随机性，加快收敛
+          top_p: 0.8,            // 减少采样范围
+          top_k: 40,             // 限制候选词数量
+          num_predict: 200,      // 限制输出长度，加快生成
+          repeat_penalty: 1.1    // 轻微惩罚重复
         }),
-        timeout: 30000
+        timeout: 20000            // 改为 20s（从 30s）
       });
 
       if (!response.ok) {
-        console.error(`[Ollama] HTTP ${response.status}`);
+        console.error(`${colors.yellow}[Ollama] HTTP ${response.status}${colors.reset}`);
         continue;
       }
 
@@ -52,7 +65,7 @@ async function callOllama(prompt, text, retries = 2) {
         return data.response.trim();
       }
     } catch (err) {
-      console.error(`[Ollama attempt ${attempt + 1}/${retries}] ${err.message}`);
+      console.error(`${colors.yellow}[Ollama attempt ${attempt + 1}/${retries}] ${err.message}${colors.reset}`);
     }
   }
 
@@ -61,21 +74,14 @@ async function callOllama(prompt, text, retries = 2) {
 
 /**
  * Extract key insights from podcast transcript (using Ollama for better extraction)
+ * Optimized for lightweight models
  */
 async function extractPodcastKeyInsights(transcript, title) {
   if (!transcript || transcript.length < 100) return [];
 
-  const prompt = `从这个播客的文字稿中提取3-5个最核心的洞察或观点。要求：
-1. 提取真正有价值的核心见解，不是细节
-2. 每个观点用一句话总结，保留关键的英文术语和人名
-3. 精炼、有深度、可直接理解
-4. 不要加数字或列表符号，直接输出观点，每个观点一行
-5. 例如输出格式：
-Core insight 1 here
-Core insight 2 here
-Core insight 3 here`;
+  const prompt = `Extract 3-5 key insights from podcast. Keep terms and names in English. Output one insight per line, no numbers or labels:`;
 
-  const result = await callOllama(prompt, transcript.substring(0, 2000), 2);
+  const result = await callOllama(prompt, transcript.substring(0, 1500), 2);
   if (result) {
     return result
       .split('\n')
@@ -88,7 +94,7 @@ Core insight 3 here`;
           .replace(/^Key\s+(insight|point)\s+\d+:?\s*/i, '')
           .trim();
       })
-      .filter(line => line.length > 0 && !line.match(/^(提示|格式|例如)/))
+      .filter(line => line.length > 0)
       .slice(0, 5);
   }
   return [];
@@ -96,6 +102,7 @@ Core insight 3 here`;
 
 /**
  * Extract key insights from blog content
+ * Optimized for lightweight models
  */
 async function extractBlogKeyInsights(html, title) {
   // Extract main content
@@ -111,17 +118,9 @@ async function extractBlogKeyInsights(html, title) {
     .replace(/&amp;/g, '&')
     .replace(/\s+/g, ' ')
     .trim()
-    .substring(0, 3000);
+    .substring(0, 2500);
 
-  const prompt = `从这篇博文中提取2-3个最核心的要点或关键观点。要求：
-1. 只提取真正重要的洞察，不是细节
-2. 保留英文术语和产品名
-3. 每个要点一句话
-4. 不要加数字或列表符号，直接列出观点，每行一个
-5. 例如输出格式：
-Key point 1
-Key point 2
-Key point 3`;
+  const prompt = `Extract 2-3 key points from blog. Keep English terms and names. Output one point per line, no numbers or labels:`;
 
   const result = await callOllama(prompt, text, 2);
   if (result) {
@@ -135,10 +134,48 @@ Key point 3`;
           .replace(/^Key\s+(insight|point)\s+\d+:?\s*/i, '')
           .trim();
       })
-      .filter(line => line.length > 0 && !line.match(/^(格式|例如)/))
+      .filter(line => line.length > 0)
       .slice(0, 3);
   }
   return [];
+}
+
+/**
+ * Translate text to Chinese using Ollama (optimized for lightweight models)
+ */
+async function translateToChinese(text, context = '') {
+  if (!text || text.length < 10) {
+    return '';
+  }
+  
+  // For lightweight models, use simpler Chinese prompt
+  const prompt = `把下面的英文翻译成中文，保留英文术语。只输出中文翻译：`;
+  
+  const result = await callOllama(prompt, text.substring(0, 800), 1);
+  if (!result) {
+    return '';
+  }
+  return result.trim();
+}
+
+/**
+ * Summarize tweets from a builder into one paragraph (optimized for lightweight models)
+ */
+async function summarizeTweets(tweets) {
+  if (!tweets || tweets.length === 0) return '';
+  
+  // Concatenate all tweet texts
+  const allText = tweets
+    .map(t => t.text || '')
+    .filter(t => t.length > 0)
+    .join('\n\n');
+  
+  if (allText.length < 50) return allText;
+  
+  const prompt = `Summary in Chinese (1-2 sentences). Keep key English terms. Only output the summary:\nContent:`;
+  
+  const result = await callOllama(prompt, allText.substring(0, 1500), 1);
+  return result || allText.substring(0, 300);
 }
 
 /**
@@ -245,9 +282,16 @@ async function generateDailyDigest() {
           const html = await fetchBlogContent(blog.url);
           if (html) {
             const insights = await extractBlogKeyInsights(html, blog.title);
+            // Translate insights to Chinese
+            const chineseInsights = [];
+            for (const insight of insights) {
+              const chinese = await translateToChinese(insight, '要点');
+              if (chinese) chineseInsights.push(chinese);
+            }
             processedBlogs.push({
               ...blog,
-              keyInsights: insights
+              keyInsights: insights,
+              chineseInsights: chineseInsights
             });
             console.log(`${colors.green}✓${colors.reset} Blog: ${blog.title}`);
           }
@@ -262,29 +306,37 @@ async function generateDailyDigest() {
       const processedPodcasts = [];
       for (const podcast of rawDigest.podcasts) {
         const insights = await extractPodcastKeyInsights(podcast.transcript, podcast.title);
+        // Translate insights to Chinese
+        const chineseInsights = [];
+        for (const insight of insights) {
+          const chinese = await translateToChinese(insight, '洞察');
+          if (chinese) chineseInsights.push(chinese);
+        }
         processedPodcasts.push({
           ...podcast,
-          keyInsights: insights
+          keyInsights: insights,
+          chineseInsights: chineseInsights
         });
         console.log(`${colors.green}✓${colors.reset} Podcast: ${podcast.title}`);
       }
       rawDigest.podcasts = processedPodcasts;
     }
 
-    // Process tweets - extract key insight from each
+    // Process tweets - aggregate by builder
     if (rawDigest.x && rawDigest.x.length > 0) {
       console.log(`${colors.blue}𝕏 Processing tweets...${colors.reset}`);
-      rawDigest.x = rawDigest.x.map((builder) => ({
-        ...builder,
-        tweets: builder.tweets.map((tweet) => {
-          const insight = extractTweetKeyInsight(tweet.text);
-          const insightStr = typeof insight === 'string' ? insight : String(insight);
-          console.log(`${colors.green}✓${colors.reset} Tweet: ${insightStr.substring(0, 50)}...`);
+      rawDigest.x = await Promise.all(rawDigest.x.map(async (builder) => {
+        const tweets = builder.tweets || [];
+        if (tweets.length > 0) {
+          const summary = await summarizeTweets(tweets);
+          console.log(`${colors.green}✓${colors.reset} Builder: ${builder.name} (${tweets.length} tweets)`);
           return {
-            ...tweet,
-            insight: insightStr
+            ...builder,
+            tweetsSummary: summary,
+            tweetCount: tweets.length
           };
-        }),
+        }
+        return builder;
       }));
     }
 
@@ -309,7 +361,7 @@ async function generateDailyDigest() {
 }
 
 /**
- * Format digest as markdown - KEY INSIGHTS ONLY
+ * Format digest as markdown - KEY INSIGHTS with bilingual support
  */
 function formatDigestMarkdown(digest) {
   let markdown = `# AI Builders Digest\n\n`;
@@ -320,86 +372,127 @@ function formatDigestMarkdown(digest) {
   if (digest.blogs && digest.blogs.length > 0) {
     markdown += `## 📰 Blogs\n\n`;
 
-    digest.blogs.forEach((item) => {
+    digest.blogs.forEach((item, idx) => {
       const title = item.title || 'Blog Post';
       const url = item.url || '#';
       const insights = item.keyInsights || [];
+      const chineseInsights = item.chineseInsights || [];
 
       markdown += `### ${title}\n`;
-      markdown += `Bottom line: `;
+      markdown += `**Bottom line:**\n`;
 
       if (insights.length > 0) {
-        markdown += insights[0] + `\n\n`;
+        markdown += `${insights[0]}\n`;
+        
         if (insights.length > 1) {
-          markdown += `Key points:\n`;
-          insights.slice(1).forEach((insight) => {
-            markdown += `- ${insight}\n`;
-          });
-          markdown += `\n`;
+          markdown += `\n**Key points:**\n`;
+          for (let i = 1; i < insights.length; i++) {
+            markdown += `- ${insights[i]}\n`;
+          }
+        }
+
+        // Chinese translation in collapsible details
+        if (chineseInsights.length > 0 && chineseInsights[0]) {
+          markdown += `\n<details>\n<summary>中文版本</summary>\n\n`;
+          markdown += `**要点：**\n${chineseInsights[0]}\n`;
+          
+          if (chineseInsights.length > 1) {
+            markdown += `\n**关键点：**\n`;
+            for (let i = 1; i < chineseInsights.length; i++) {
+              if (chineseInsights[i]) {
+                markdown += `- ${chineseInsights[i]}\n`;
+              }
+            }
+          }
+          markdown += `\n</details>\n`;
         }
       }
 
-      markdown += `<a href="${url}" target="_blank">${url}</a>\n\n`;
+      markdown += `\n<a href="${url}" target="_blank">${url}</a>\n`;
+      
+      // Add separator between items except the last one
+      if (idx < digest.blogs.length - 1) {
+        markdown += `\n---\n\n`;
+      }
     });
+
+    markdown += `\n---\n\n`;
   }
 
   // === SECTION 2: PODCASTS ===
   if (digest.podcasts && digest.podcasts.length > 0) {
     markdown += `## 🎙️ Podcasts\n\n`;
 
-    digest.podcasts.forEach((item) => {
+    digest.podcasts.forEach((item, idx) => {
       const title = item.title || 'Episode';
       const source = item.name || 'Podcast';
       const url = item.url || '#';
       const insights = item.keyInsights || [];
+      const chineseInsights = item.chineseInsights || [];
 
       markdown += `### ${source} — "${title}"\n`;
-      markdown += `Bottom line: `;
+      markdown += `**Bottom line:**\n`;
 
       if (insights.length > 0) {
-        markdown += insights[0] + `\n\n`;
+        markdown += `${insights[0]}\n`;
+        
         if (insights.length > 1) {
-          markdown += `Key insights:\n`;
-          insights.slice(1).forEach((insight) => {
-            markdown += `- ${insight}\n`;
-          });
-          markdown += `\n`;
+          markdown += `\n**Key insights:**\n`;
+          for (let i = 1; i < insights.length; i++) {
+            markdown += `- ${insights[i]}\n`;
+          }
+        }
+
+        // Chinese translation in collapsible details
+        if (chineseInsights.length > 0 && chineseInsights[0]) {
+          markdown += `\n<details>\n<summary>中文版本</summary>\n\n`;
+          markdown += `**要点：**\n${chineseInsights[0]}\n`;
+          
+          if (chineseInsights.length > 1) {
+            markdown += `\n**核心洞察：**\n`;
+            for (let i = 1; i < chineseInsights.length; i++) {
+              if (chineseInsights[i]) {
+                markdown += `- ${chineseInsights[i]}\n`;
+              }
+            }
+          }
+          markdown += `\n</details>\n`;
         }
       }
 
-      markdown += `<a href="${url}" target="_blank">${url}</a>\n\n`;
+      markdown += `\n<a href="${url}" target="_blank">${url}</a>\n`;
+      
+      // Add separator between items except the last one
+      if (idx < digest.podcasts.length - 1) {
+        markdown += `\n---\n\n`;
+      }
     });
+
+    markdown += `\n---\n\n`;
   }
 
   // === SECTION 3: X TWEETS ===
   if (digest.x && digest.x.length > 0) {
     markdown += `## 𝕏 Tweets\n\n`;
 
-    digest.x.forEach((builder) => {
+    digest.x.forEach((builder, idx) => {
       const name = builder.name || 'Unknown';
       const handle = builder.handle || 'unknown';
-      const tweets = builder.tweets || [];
+      const summary = builder.tweetsSummary || '';
+      const profileUrl = `https://x.com/${handle}`;
 
-      if (tweets.length === 0) return;
+      if (!summary) return;
 
-      markdown += `### @${handle}\n`;
-      markdown += `${name}\n`;
-
-      // Show all tweets with their insights
-      tweets.forEach((tweet) => {
-        const insight = tweet.insight || tweet.text || '';
-        const insightStr = typeof insight === 'string' ? insight : String(insight);
-        const url = tweet.url || `https://x.com/status/${tweet.id || 'unknown'}`;
-        markdown += `${insightStr}\n`;
-        markdown += `<a href="${url}" target="_blank">${url}</a>\n`;
-      });
-
-      markdown += `\n`;
+      markdown += `### [@${handle} — ${name}](${profileUrl})\n\n`;
+      markdown += `${summary}\n\n`;
+      markdown += `<a href="${profileUrl}" target="_blank">查看主页</a>\n`;
+      
+      // Add separator between items except the last one
+      if (idx < digest.x.length - 1) {
+        markdown += `\n---\n\n`;
+      }
     });
   }
-
-  markdown += `---\n\n`;
-  markdown += `Reply to adjust your settings, sources, or summary style.\n`;
 
   return markdown;
 }
