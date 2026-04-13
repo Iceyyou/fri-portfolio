@@ -77,13 +77,19 @@ async function callOllama(prompt, text, retries = 2) {
  * Optimized for lightweight models
  */
 async function extractPodcastKeyInsights(transcript, title) {
-  if (!transcript || transcript.length < 100) return [];
+  if (!transcript || transcript.length < 100) {
+    console.warn(`${colors.yellow}⚠️  Podcast transcript too short or empty: ${title}${colors.reset}`);
+    // 回退：从标题中生成默认 insight
+    return [
+      `This episode discusses ${title.replace(/[:"]+/g, '').trim()}.`
+    ];
+  }
 
   const prompt = `Extract 3-5 key insights from podcast. Keep terms and names in English. Output one insight per line, no numbers or labels:`;
 
   const result = await callOllama(prompt, transcript.substring(0, 1500), 2);
   if (result) {
-    return result
+    const insights = result
       .split('\n')
       .filter(line => line.trim().length > 10)
       .map(line => {
@@ -96,8 +102,15 @@ async function extractPodcastKeyInsights(transcript, title) {
       })
       .filter(line => line.length > 0)
       .slice(0, 5);
+    
+    if (insights.length > 0) return insights;
   }
-  return [];
+  
+  // 如果 Ollama 失败或返回空，使用默认 insight
+  console.warn(`${colors.yellow}⚠️  Failed to extract podcast insights, using fallback: ${title}${colors.reset}`);
+  return [
+    `This episode covers important insights about ${title.replace(/[:"]+/g, '').trim()}.`
+  ];
 }
 
 /**
@@ -160,6 +173,7 @@ async function translateToChinese(text, context = '') {
 
 /**
  * Summarize tweets from a builder into one paragraph (optimized for lightweight models)
+ * 总是返回中文提炼总结，不返回原英文内容
  */
 async function summarizeTweets(tweets) {
   if (!tweets || tweets.length === 0) return '';
@@ -170,12 +184,41 @@ async function summarizeTweets(tweets) {
     .filter(t => t.length > 0)
     .join('\n\n');
   
-  if (allText.length < 50) return allText;
+  if (allText.length < 50) {
+    // 如果内容太短，也要尝试翻译成中文
+    const chinese = await translateToChinese(allText, 'tweets');
+    return chinese || allText;
+  }
   
-  const prompt = `Summary in Chinese (1-2 sentences). Keep key English terms. Only output the summary:\nContent:`;
+  // 使用中文提示词要求总结，确保输出中文
+  const prompt = `请用中文总结下面这个人在推文中的主要观点（1-2句话，保留重要英文术语）：`;
   
   const result = await callOllama(prompt, allText.substring(0, 1500), 1);
-  return result || allText.substring(0, 300);
+  
+  if (result && result.trim().length > 0) {
+    // 清理可能的提示词残留
+    let cleaned = result.trim();
+    // 移除常见的英文提示词残留
+    cleaned = cleaned.replace(/^(Summary in Chinese|Chinese summary)[:\s]*/i, '');
+    // 移除 "内容：" 等标签
+    cleaned = cleaned.replace(/^内容[:：]\s*/, '');
+    return cleaned;
+  }
+  
+  // 如果 Ollama 失败，则使用翻译函数
+  console.warn(`${colors.yellow}⚠️  Tweet summarization failed, attempting translation...${colors.reset}`);
+  const chinese = await translateToChinese(allText.substring(0, 800), 'tweets');
+  if (chinese && chinese.trim().length > 0) {
+    return chinese;
+  }
+  
+  // 最后的回退：返回处理后的英文摘要
+  const summary = allText
+    .split('\n')
+    .slice(0, 2)
+    .join(' | ')
+    .substring(0, 300);
+  return summary || 'Tweet content';
 }
 
 /**
