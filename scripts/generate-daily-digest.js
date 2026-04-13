@@ -85,25 +85,26 @@ async function extractPodcastKeyInsights(transcript, title) {
     ];
   }
 
-  const prompt = `Extract 3-5 key insights from podcast. Keep terms and names in English. Output one insight per line, no numbers or labels:`;
+  const prompt = `Extract 4-6 specific, concrete key insights or takeaways from this podcast. Each must be a complete, informative sentence (not generic). Output one insight per line. No numbers, bullets, or labels or prefix text like "Insight:":`;
 
-  const result = await callOllama(prompt, transcript.substring(0, 1500), 2);
+  const result = await callOllama(prompt, transcript.substring(0, 2000), 2);
   if (result) {
     const insights = result
       .split('\n')
-      .filter(line => line.trim().length > 10)
+      .map(line => line.trim())
+      .filter(line => line.length > 20)
       .map(line => {
-        // Remove number prefixes, labels, and colons
+        // Remove common prefixes more aggressively
         return line
           .replace(/^[-•*\d.]+\s*/, '')
-          .replace(/^(Core\s+)?insight\s+\d+:?\s*/i, '')
-          .replace(/^Key\s+(insight|point)\s+\d+:?\s*/i, '')
+          .replace(/^(Core\s+)?(insight|key insight|point|takeaway|learning)\s*\d*:?\s*/i, '')
+          .replace(/^(Insight|Key Insight|Point|Takeaway|Learning|Discussion)[:：]\s*/i, '')
           .trim();
       })
-      .filter(line => line.length > 0)
+      .filter(line => line.length > 20)
       .slice(0, 5);
     
-    if (insights.length > 0) return insights;
+    if (insights.length >= 2) return insights;
   }
   
   // 如果 Ollama 失败或返回空，使用默认 insight
@@ -131,26 +132,37 @@ async function extractBlogKeyInsights(html, title) {
     .replace(/&amp;/g, '&')
     .replace(/\s+/g, ' ')
     .trim()
-    .substring(0, 2500);
+    .substring(0, 3000);
 
-  const prompt = `Extract 2-3 key points from blog. Keep English terms and names. Output one point per line, no numbers or labels:`;
+  if (text.length < 200) {
+    return [`This blog discusses ${title.replace(/[:"]+/g, '').trim()}.`];
+  }
+
+  const prompt = `Extract 4-6 specific, concrete key insights or findings from this content. Each must be a complete, informative sentence (not generic). Output one insight per line. No numbers, bullets, or labels:`;
 
   const result = await callOllama(prompt, text, 2);
   if (result) {
-    return result
+    const insights = result
       .split('\n')
-      .filter(line => line.trim().length > 10)
+      .map(line => line.trim())
+      .filter(line => line.length > 20)
       .map(line => {
-        // Remove number prefixes and labels
+        // Remove common prefixes more aggressively
         return line
           .replace(/^[-•*\d.]+\s*/, '')
-          .replace(/^Key\s+(insight|point)\s+\d+:?\s*/i, '')
+          .replace(/^(Key\s+)?(insight|point|finding|takeaway|learning|recommendation)\s*\d*:?\s*/i, '')
+          .replace(/^(Insight|Point|Finding|Takeaway|Learning|Recommendation):?\s*/i, '')
           .trim();
       })
-      .filter(line => line.length > 0)
-      .slice(0, 3);
+      .filter(line => line.length > 20)
+      .slice(0, 5);
+    
+    if (insights.length >= 2) return insights;
   }
-  return [];
+  
+  // 回退
+  console.warn(`${colors.yellow}⚠️  Blog insights extraction failed, using default: ${title}${colors.reset}`);
+  return [`This blog discusses ${title.replace(/[:"]+/g, '').trim()}.`];
 }
 
 /**
@@ -184,40 +196,44 @@ async function summarizeTweets(tweets) {
     .filter(t => t.length > 0)
     .join('\n\n');
   
-  if (allText.length < 50) {
+  if (allText.length < 30) {
     // 如果内容太短，也要尝试翻译成中文
     const chinese = await translateToChinese(allText, 'tweets');
     return chinese || allText;
   }
   
   // 使用中文提示词要求总结，确保输出中文
-  const prompt = `请用中文总结下面这个人在推文中的主要观点（1-2句话，保留重要英文术语）：`;
+  const prompt = `请用中文总结下面这个人在推文中的核心观点和主要信息。使用2-3句话，保留重要的英文术语和名字。不要使用"内容"、"摘要"等标签：`;
   
-  const result = await callOllama(prompt, allText.substring(0, 1500), 1);
+  const result = await callOllama(prompt, allText.substring(0, 2000), 1);
   
-  if (result && result.trim().length > 0) {
+  if (result && result.trim().length > 10) {
     // 清理可能的提示词残留
     let cleaned = result.trim();
     // 移除常见的英文提示词残留
-    cleaned = cleaned.replace(/^(Summary in Chinese|Chinese summary)[:\s]*/i, '');
-    // 移除 "内容：" 等标签
-    cleaned = cleaned.replace(/^内容[:：]\s*/, '');
-    return cleaned;
+    cleaned = cleaned.replace(/^(Summary in Chinese|Chinese summary|翻译结果|总结)[:\s]*/i, '');
+    // 移除过度重复的标签
+    cleaned = cleaned.replace(/^内容[:：]\s*内容[:：]\s*/g, '内容：');
+    cleaned = cleaned.replace(/^(内容[:：]|回应[:：]|反馈[:：])\s*/g, '');
+    // 去掉末尾的孤立的"反馈"或"回应"
+    cleaned = cleaned.replace(/\s+(反馈|回应|信息)[\s：]*$/g, '');
+    
+    return cleaned.length > 10 ? cleaned : allText.substring(0, 200);
   }
   
   // 如果 Ollama 失败，则使用翻译函数
   console.warn(`${colors.yellow}⚠️  Tweet summarization failed, attempting translation...${colors.reset}`);
-  const chinese = await translateToChinese(allText.substring(0, 800), 'tweets');
-  if (chinese && chinese.trim().length > 0) {
+  const chinese = await translateToChinese(allText.substring(0, 1000), 'tweets');
+  if (chinese && chinese.trim().length > 10) {
     return chinese;
   }
   
-  // 最后的回退：返回处理后的英文摘要
+  // 最后的回退：返回简短摘要
   const summary = allText
     .split('\n')
     .slice(0, 2)
-    .join(' | ')
-    .substring(0, 300);
+    .join(' ')
+    .substring(0, 250);
   return summary || 'Tweet content';
 }
 
