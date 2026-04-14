@@ -109,7 +109,7 @@ async function extractInsightsWithOllama(rawDigest) {
         return {
           ...blog,
           insight: await getOllamaInsight(
-            `用一句话总结这篇文章的核心观点（不超过30字）：\n\n标题：${blog.title}\n\n内容摘要：${content}\n\n回答：`,
+            `请分析这篇文章的关键洞察。不是简单翻译标题，而是提取文章中实际讨论的重要发现、数据或观点。\n\n标题：${blog.title}\n\n内容：${content}\n\n用2-3句话总结核心洞察（包括具体信息、方法或发现）：`,
             'blog'
           ),
         };
@@ -126,7 +126,7 @@ async function extractInsightsWithOllama(rawDigest) {
         return {
           ...podcast,
           insight: await getOllamaInsight(
-            `用一句话总结这期播客的核心观点（不超过30字）：\n\n标题：${podcast.title}\n\n描述：${desc}\n\n回答：`,
+            `请分析这期播客的关键洞察。不是简单翻译标题，而是提取播客中实际讨论的核心观点、论证或发现。\n\n标题：${podcast.title}\n\n描述：${desc}\n\n用2-3句话总结核心洞察（包括具体的论点、数据或观点）：`,
             'podcast'
           ),
         };
@@ -170,8 +170,8 @@ async function getOllamaInsight(prompt, type = 'default', retries = 3) {
         model: 'qwen2:1.5b',
         prompt: prompt,
         stream: false,
-        temperature: 0.3, // Slightly higher for better Chinese
-        top_p: 0.9,
+        temperature: 0.5, // Higher for more creative insight extraction
+        top_p: 0.95,
       });
 
       if (response && response.response) {
@@ -225,7 +225,7 @@ function callOllamaAPI(payload) {
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(data),
       },
-      timeout: 120000, // 120 seconds (increased for more calls)
+      timeout: 180000, // 180 seconds (increased for longer insight generation)
     };
 
     let timedOut = false;
