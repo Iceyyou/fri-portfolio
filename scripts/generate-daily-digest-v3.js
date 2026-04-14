@@ -185,9 +185,10 @@ async function getOllamaInsight(prompt, type = 'default', retries = 3) {
 
         // Validate minimum length
         if (result && result.length > 5) {
-          // Cap at reasonable length for insights
-          if (result.length > 100) {
-            result = result.substring(0, 97) + '...';
+          // Allow full insight output for Blog/Podcast
+          // Only cap tweets to 80 chars for brevity
+          if (type === 'tweet' && result.length > 80) {
+            result = result.substring(0, 77) + '...';
           }
           return result;
         }
