@@ -105,11 +105,12 @@ async function extractInsightsWithOllama(rawDigest) {
     console.log(`  📰 Processing ${enhanced.blogs.length} blogs...`);
     enhanced.blogs = await Promise.all(
       enhanced.blogs.map(async (blog) => {
-        const content = (blog.description || blog.content || '').substring(0, 300);
+        const content = (blog.description || blog.content || '').substring(0, 500);
         return {
           ...blog,
           insight: await getOllamaInsight(
-            `Extract KEY INSIGHT (max 20 words):\n\nTitle: ${blog.title}\n\nContent: ${content}\n\nAnswer:`
+            `用一句话总结这篇文章的核心观点（不超过30字）：\n\n标题：${blog.title}\n\n内容摘要：${content}\n\n回答：`,
+            'blog'
           ),
         };
       })
@@ -121,11 +122,12 @@ async function extractInsightsWithOllama(rawDigest) {
     console.log(`  🎙️ Processing ${enhanced.podcasts.length} podcasts...`);
     enhanced.podcasts = await Promise.all(
       enhanced.podcasts.map(async (podcast) => {
-        const desc = (podcast.description || '').substring(0, 300);
+        const desc = (podcast.description || '').substring(0, 500);
         return {
           ...podcast,
           insight: await getOllamaInsight(
-            `Extract KEY INSIGHT (max 20 words):\n\nTitle: ${podcast.title}\n\nDescription: ${desc}\n\nAnswer:`
+            `用一句话总结这期播客的核心观点（不超过30字）：\n\n标题：${podcast.title}\n\n描述：${desc}\n\n回答：`,
+            'podcast'
           ),
         };
       })
@@ -135,15 +137,23 @@ async function extractInsightsWithOllama(rawDigest) {
   // Process tweets
   if (enhanced.x && enhanced.x.length > 0) {
     console.log(`  𝕏 Processing ${enhanced.x.length} builders...`);
-    enhanced.x = enhanced.x.map((builder) => ({
-      ...builder,
-      tweets: builder.tweets
-        ? builder.tweets.map((tweet) => ({
-            ...tweet,
-            insight: extractTweetInsight(tweet.text), // Fast heuristic for tweets
-          }))
-        : [],
-    }));
+    enhanced.x = await Promise.all(
+      enhanced.x.map(async (builder) => ({
+        ...builder,
+        tweets: builder.tweets
+          ? await Promise.all(
+              builder.tweets.map(async (tweet) => ({
+                ...tweet,
+                // Use Ollama to summarize tweets in Chinese for better insight
+                insight: await getOllamaInsight(
+                  `用1-2句话总结这条推文的核心观点（中文，不超过50字）：\n\n推文内容：${tweet.text?.substring(0, 300)}\n\n总结：`,
+                  'tweet'
+                ),
+              }))
+            )
+          : [],
+      }))
+    );
   }
 
   return enhanced;
@@ -153,19 +163,32 @@ async function extractInsightsWithOllama(rawDigest) {
  * Call Ollama qwen2:1.5b to extract insight
  * Retries up to 3 times with exponential backoff
  */
-async function getOllamaInsight(prompt, retries = 3) {
+async function getOllamaInsight(prompt, type = 'default', retries = 3) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const response = await callOllamaAPI({
         model: 'qwen2:1.5b',
         prompt: prompt,
         stream: false,
-        temperature: 0.2, // Lower temperature for more deterministic output
+        temperature: 0.3, // Slightly higher for better Chinese
+        top_p: 0.9,
       });
 
       if (response && response.response) {
-        const result = response.response.trim();
-        if (result && result.length > 0) {
+        let result = response.response.trim();
+        
+        // Clean up common Ollama artifacts
+        result = result
+          .replace(/^(回答|答案|核心观点|总结|insight)[：:\s]*/i, '') // Remove prefixes
+          .replace(/[\n\r]/g, ' ') // Remove line breaks
+          .trim();
+
+        // Validate minimum length
+        if (result && result.length > 5) {
+          // Cap at reasonable length for insights
+          if (result.length > 100) {
+            result = result.substring(0, 97) + '...';
+          }
           return result;
         }
       }
@@ -179,11 +202,12 @@ async function getOllamaInsight(prompt, retries = 3) {
         await new Promise((resolve) => setTimeout(resolve, delayMs));
       } else {
         console.warn(`    ⚠️  Ollama unavailable after ${retries} attempts: ${e.message}`);
-        return 'Unable to extract insight.';
+        // Return a fallback based on type
+        return type === 'blog' ? '无法生成摘要' : type === 'podcast' ? '无法生成摘要' : 'Unable to extract.';
       }
     }
   }
-  return '';
+  return '无法生成摘要';
 }
 
 /**
@@ -201,7 +225,7 @@ function callOllamaAPI(payload) {
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(data),
       },
-      timeout: 90000, // 90 seconds for large models
+      timeout: 120000, // 120 seconds (increased for more calls)
     };
 
     let timedOut = false;
@@ -214,7 +238,7 @@ function callOllamaAPI(payload) {
         timedOut = true;
         req.destroy();
         reject(new Error('Response timeout - Ollama took too long to respond'));
-      }, 85000);
+      }, 110000);
 
       res.on('data', (chunk) => {
         body += chunk.toString();
