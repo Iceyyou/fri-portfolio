@@ -22,11 +22,15 @@ if [ -z "$TOKEN" ]; then
   exit 0
 fi
 
-echo "[fetch-content] Cloning content from private repo..."
-if git clone --depth 1 "https://x-access-token:${TOKEN}@github.com/Iceyyou/fri-content.git" /tmp/fri-content-clone; then
-  echo "[fetch-content] Clone successful"
+# Determine branch based on Vercel environment
+# VERCEL_GIT_COMMIT_REF is set by Vercel (e.g., "master", "dev")
+CONTENT_BRANCH="${VERCEL_GIT_COMMIT_REF:-master}"
+echo "[fetch-content] Cloning content from private repo (branch: $CONTENT_BRANCH)..."
+
+if git clone --depth 1 --branch "$CONTENT_BRANCH" "https://x-access-token:${TOKEN}@github.com/Iceyyou/fri-content.git" /tmp/fri-content-clone; then
+  echo "[fetch-content] Clone successful from branch $CONTENT_BRANCH"
 else
-  echo "[fetch-content] ERROR: Failed to clone repository"
+  echo "[fetch-content] ERROR: Failed to clone repository from branch $CONTENT_BRANCH"
   mkdir -p "$DIARY" "$WEEKLY" "$DAILY"
   exit 0
 fi
