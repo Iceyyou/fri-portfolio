@@ -68,25 +68,22 @@ async function generateDailyDigest() {
 
     // Step 4: Save to both fri-content and content directories
     const workspaceRoot = path.join(__dirname, '..');
-    const friContentDir = path.join(workspaceRoot, 'fri-content', 'daily');
-    const contentDir = path.join(workspaceRoot, 'content', 'daily');
     
-    if (!fs.existsSync(friContentDir)) {
-      fs.mkdirSync(friContentDir, { recursive: true });
-    }
-    if (!fs.existsSync(contentDir)) {
-      fs.mkdirSync(contentDir, { recursive: true });
+    // Only write to the independent fri-content repository
+    // Vercel will pull from there at build time via fetch-content.sh
+    const independentFriContentDir = path.join(workspaceRoot, '..', 'fri-content', 'daily');
+    
+    if (!fs.existsSync(independentFriContentDir)) {
+      fs.mkdirSync(independentFriContentDir, { recursive: true });
     }
 
     const today = new Date().toISOString().split('T')[0];
-    const friContentPath = path.join(friContentDir, `${today}.md`);
-    const contentPath = path.join(contentDir, `${today}.md`);
+    const outputPath = path.join(independentFriContentDir, `${today}.md`);
     
-    fs.writeFileSync(friContentPath, markdown, 'utf-8');
-    fs.writeFileSync(contentPath, markdown, 'utf-8');
+    fs.writeFileSync(outputPath, markdown, 'utf-8');
 
     console.log(`${colors.green}✅ Daily digest generated:${colors.reset}`);
-    console.log(`   - ${friContentPath}`);
+    console.log(`   - ${outputPath}`);
     console.log(`   - ${contentPath}`);
   } catch (error) {
     console.error(`${colors.red}❌ Error:${colors.reset}`, error.message);
