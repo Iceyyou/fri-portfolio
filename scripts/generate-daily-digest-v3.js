@@ -83,8 +83,60 @@ async function generateDailyDigest() {
     fs.writeFileSync(outputPath, markdown, 'utf-8');
 
     console.log(`${colors.green}✅ Daily digest generated:${colors.reset}`);
-    console.log(`   - ${outputPath}`);
-    console.log(`   - ${contentPath}`);
+    console.log(`   ${outputPath}`);
+
+    // Step 5: Auto-commit and push to fri-content repository
+    console.log(`${colors.blue}📤 Pushing to fri-content repository...${colors.reset}`);
+    const friContentRoot = path.join(workspaceRoot, '..', 'fri-content');
+    
+    try {
+      // Git add
+      execSync(`git add daily/${today}.md`, { 
+        cwd: friContentRoot, 
+        encoding: 'utf-8',
+        stdio: 'inherit'
+      });
+      
+      // Git commit
+      const commitMessage = `daily: auto-generated digest for ${today}`;
+      execSync(`git commit -m "${commitMessage}"`, { 
+        cwd: friContentRoot, 
+        encoding: 'utf-8',
+        stdio: 'inherit'
+      });
+      
+      // Git push
+      execSync(`git push origin master`, { 
+        cwd: friContentRoot, 
+        encoding: 'utf-8',
+        stdio: 'inherit'
+      });
+      
+      console.log(`${colors.green}✅ Pushed to fri-content/master${colors.reset}`);
+      
+      // Step 6: Trigger Vercel rebuild by pushing empty commit to fri-portfolio
+      console.log(`${colors.blue}🚀 Triggering Vercel rebuild...${colors.reset}`);
+      execSync(`git commit --allow-empty -m "trigger: rebuild for daily digest ${today}"`, { 
+        cwd: workspaceRoot, 
+        encoding: 'utf-8',
+        stdio: 'inherit'
+      });
+      
+      execSync(`git push origin master`, { 
+        cwd: workspaceRoot, 
+        encoding: 'utf-8',
+        stdio: 'inherit'
+      });
+      
+      console.log(`${colors.green}✅ Vercel rebuild triggered${colors.reset}`);
+      console.log(`${colors.green}🎉 Full automation completed!${colors.reset}`);
+      
+    } catch (gitError) {
+      console.error(`${colors.yellow}⚠️  Git operation failed:${colors.reset}`, gitError.message);
+      console.log(`${colors.yellow}   Please manually push the changes.${colors.reset}`);
+      // Don't exit with error - file is generated successfully
+    }
+    
   } catch (error) {
     console.error(`${colors.red}❌ Error:${colors.reset}`, error.message);
     process.exit(1);
