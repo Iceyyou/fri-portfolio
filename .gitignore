@@ -10,3 +10,10 @@ matrix-rain-playground.html
 content/diary/
 content/weekly/
 content/daily/
+
+# WorkBuddy tools
+.codebuddy/
+.workbuddy/
+
+# Archive directory (local backup only)
+archive/
