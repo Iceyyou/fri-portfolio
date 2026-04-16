@@ -9,11 +9,18 @@ DAILY="content/daily"
 
 TOKEN="${CONTENT_GITHUB_TOKEN:-$DIARY_GITHUB_TOKEN}"
 
+echo "[fetch-content] ====== Debug Info ======"
+echo "[fetch-content] TOKEN present: $([ -n "$TOKEN" ] && echo 'YES' || echo 'NO')"
+echo "[fetch-content] TOKEN length: ${#TOKEN}"
+echo "[fetch-content] VERCEL_GIT_COMMIT_REF: ${VERCEL_GIT_COMMIT_REF:-'not set'}"
+echo "[fetch-content] ========================"
+
 if [ -z "$TOKEN" ]; then
-  echo "[fetch-content] WARNING: No GitHub token set, skipping content fetch"
+  echo "[fetch-content] ❌ ERROR: No GitHub token set!"
   echo "[fetch-content] Set CONTENT_GITHUB_TOKEN environment variable in Vercel"
+  echo "[fetch-content] Creating empty directories to prevent build failure..."
   mkdir -p "$DIARY" "$WEEKLY" "$DAILY"
-  exit 0
+  exit 1  # Changed to exit 1 to fail the build and make the issue visible
 fi
 
 # Determine branch based on Vercel environment
@@ -47,9 +54,12 @@ fi
 
 # Copy daily files
 if [ -d "/tmp/fri-content-clone/daily" ]; then
+  echo "[fetch-content] Daily source directory exists"
+  echo "[fetch-content] Files in source: $(ls /tmp/fri-content-clone/daily/*.md 2>/dev/null | wc -l | tr -d ' ')"
   cp /tmp/fri-content-clone/daily/*.md "$DAILY/" 2>/dev/null && echo "[fetch-content] ✓ Fetched $(ls $DAILY/*.md 2>/dev/null | wc -l | tr -d ' ') daily digests" || echo "[fetch-content] No daily digests found"
+  echo "[fetch-content] Files after copy: $(ls $DAILY/*.md 2>/dev/null | wc -l | tr -d ' ')"
 else
-  echo "[fetch-content] No daily directory in source repo"
+  echo "[fetch-content] ❌ No daily directory in source repo"
 fi
 
 rm -rf /tmp/fri-content-clone
