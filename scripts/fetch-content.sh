@@ -7,12 +7,6 @@ DIARY="content/diary"
 WEEKLY="content/weekly"
 DAILY="content/daily"
 
-# skip if content already present (local dev)
-if [ -d "$DIARY" ] && [ "$(ls -A $DIARY 2>/dev/null)" ]; then
-  echo "[fetch-content] content/ already has files, skipping fetch"
-  exit 0
-fi
-
 TOKEN="${CONTENT_GITHUB_TOKEN:-$DIARY_GITHUB_TOKEN}"
 
 if [ -z "$TOKEN" ]; then
