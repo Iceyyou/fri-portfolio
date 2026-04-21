@@ -1,0 +1,265 @@
+/* ==========================================================================
+ * Home Page — Orbital Navigation Styles
+ * ==========================================================================
+ * [INPUT]:  Design mockup home.html
+ * [OUTPUT]: CSS for orbital layout, animations, glass panels
+ * [POS]:    Page-specific styles for /home route
+ * ========================================================================== */
+
+/* --------------------------------------------------------------------------
+ * HOME PAGE THEME TOKENS
+ * -------------------------------------------------------------------------- */
+
+.home-page {
+  --home-primary: #13eca4;
+  --home-background: #05050A;
+  --home-surface: rgba(10, 10, 15, 0.6);
+  --home-border: rgba(255, 255, 255, 0.08);
+  --home-muted: #475569;
+  --home-accent: #7C3AED;
+  --home-cyan-glow: #00f2ff;
+  
+  background-color: var(--home-background);
+  color: #F8FAFC;
+  font-family: 'Manrope', var(--font-geist), sans-serif;
+}
+
+/* --------------------------------------------------------------------------
+ * FONTS
+ * -------------------------------------------------------------------------- */
+
+.font-display {
+  font-family: 'Space Grotesk', var(--font-geist), sans-serif;
+}
+
+.font-body {
+  font-family: 'Manrope', var(--font-geist), sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', var(--font-geist), monospace;
+}
+
+/* --------------------------------------------------------------------------
+ * BACKGROUND GRID
+ * -------------------------------------------------------------------------- */
+
+.home-page .bg-grid {
+  background-size: 60px 60px;
+  background-image: 
+    linear-gradient(to right, rgba(71, 85, 105, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(71, 85, 105, 0.05) 1px, transparent 1px);
+}
+
+/* --------------------------------------------------------------------------
+ * GLASS PANEL (Home-specific to avoid conflict)
+ * -------------------------------------------------------------------------- */
+
+.glass-panel-home {
+  background: var(--home-surface);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--home-border);
+}
+
+/* --------------------------------------------------------------------------
+ * TILT CARD
+ * -------------------------------------------------------------------------- */
+
+.tilt-card {
+  transition: transform 0.2s ease-out;
+  transform-style: preserve-3d;
+}
+
+.tilt-card:hover {
+  transform: perspective(1000px) rotateX(4deg) rotateY(4deg) scale(1.02);
+}
+
+/* --------------------------------------------------------------------------
+ * NODE LINES (SVG connecting lines)
+ * -------------------------------------------------------------------------- */
+
+.node-line {
+  stroke: rgba(255, 255, 255, 0.05);
+  stroke-width: 1px;
+  stroke-dasharray: 4 4;
+  transition: all 0.5s ease;
+}
+
+.node-container:hover .node-line {
+  stroke: var(--home-accent);
+  stroke-width: 1.5px;
+  stroke-dasharray: 0;
+  filter: drop-shadow(0 0 4px var(--home-accent));
+}
+
+/* --------------------------------------------------------------------------
+ * ORBITAL RINGS
+ * -------------------------------------------------------------------------- */
+
+.orbital-ring {
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 50% !important;
+}
+
+/* --------------------------------------------------------------------------
+ * NAV ITEMS
+ * -------------------------------------------------------------------------- */
+
+.nav-item {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-item:hover {
+  color: white;
+  letter-spacing: 0.15em;
+}
+
+/* --------------------------------------------------------------------------
+ * COLOR UTILITIES
+ * -------------------------------------------------------------------------- */
+
+.bg-accent {
+  background-color: var(--home-accent);
+}
+
+.bg-accent\/10 {
+  background-color: rgba(124, 58, 237, 0.1);
+}
+
+.bg-cyan-glow\/5 {
+  background-color: rgba(0, 242, 255, 0.05);
+}
+
+.bg-primary {
+  background-color: var(--home-primary);
+}
+
+.text-accent {
+  color: var(--home-accent);
+}
+
+.text-muted {
+  color: var(--home-muted);
+}
+
+.border-accent\/40 {
+  border-color: rgba(124, 58, 237, 0.4);
+}
+
+.border-cyan-glow\/30 {
+  border-color: rgba(0, 242, 255, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+ * MATERIAL ICON REPLACEMENT
+ * -------------------------------------------------------------------------- */
+
+.material-icon {
+  font-family: 'Space Grotesk', var(--font-geist), sans-serif;
+  font-weight: bold;
+  line-height: 1;
+}
+
+/* --------------------------------------------------------------------------
+ * KEYFRAMES
+ * -------------------------------------------------------------------------- */
+
+@keyframes gridMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-100px, -100px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { 
+    opacity: 0.3; 
+    transform: scale(1) translate(-50%, -50%); 
+  }
+  50% { 
+    opacity: 0.6; 
+    transform: scale(1.1) translate(-45%, -45%); 
+  }
+}
+
+@keyframes breathing {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.2), 0 0 40px rgba(0, 242, 255, 0.1); 
+  }
+  50% { 
+    box-shadow: 0 0 50px rgba(124, 58, 237, 0.4), 0 0 80px rgba(0, 242, 255, 0.2); 
+  }
+}
+
+@keyframes scanline {
+  0% { top: 0%; }
+  100% { top: 100%; }
+}
+
+/* --------------------------------------------------------------------------
+ * ANIMATION UTILITIES
+ * -------------------------------------------------------------------------- */
+
+.animate-grid-move {
+  animation: gridMove 40s linear infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.animate-breathing {
+  animation: breathing 8s ease-in-out infinite;
+}
+
+.animate-scanline {
+  animation: scanline 4s linear infinite;
+}
+
+/* --------------------------------------------------------------------------
+ * MOBILE RESPONSIVE
+ * -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .home-page .w-\[700px\] {
+    width: 100vw;
+    height: 100vh;
+  }
+  
+  .home-page .w-48 {
+    width: 10rem;
+    height: 10rem;
+  }
+  
+  .home-page .orbital-ring {
+    display: none;
+  }
+  
+  .home-page .node-line {
+    display: none;
+  }
+  
+  .home-page .top-\[60px\] {
+    top: 80px;
+  }
+  
+  .home-page .bottom-\[180px\] {
+    bottom: 120px;
+  }
+  
+  .home-page .left-\[80px\] {
+    left: 40px;
+  }
+  
+  .home-page .right-\[80px\] {
+    right: 40px;
+  }
+}
