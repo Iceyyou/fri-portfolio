@@ -10,6 +10,47 @@
  * HOME PAGE THEME TOKENS
  * -------------------------------------------------------------------------- */
 
+/* Dark Mode (default) */
+.home-page.dark {
+  --home-primary: #13eca4;
+  --home-background: #05050A;
+  --home-surface: rgba(10, 10, 15, 0.6);
+  --home-border: rgba(255, 255, 255, 0.08);
+  --home-muted: #475569;
+  --home-accent: #7C3AED;
+  --home-cyan-glow: #00f2ff;
+  --home-text: #F8FAFC;
+  --home-text-secondary: rgba(255, 255, 255, 0.4);
+  --home-grid-color: rgba(71, 85, 105, 0.05);
+  --home-orbital-ring: rgba(255, 255, 255, 0.03);
+  --home-node-line: rgba(255, 255, 255, 0.05);
+  
+  background-color: var(--home-background);
+  color: var(--home-text);
+  font-family: 'Manrope', var(--font-geist), sans-serif;
+}
+
+/* Light Mode */
+.home-page.light {
+  --home-primary: #059669;
+  --home-background: #F8FAFC;
+  --home-surface: rgba(255, 255, 255, 0.8);
+  --home-border: rgba(0, 0, 0, 0.08);
+  --home-muted: #64748B;
+  --home-accent: #7C3AED;
+  --home-cyan-glow: #0891B2;
+  --home-text: #0F172A;
+  --home-text-secondary: rgba(0, 0, 0, 0.5);
+  --home-grid-color: rgba(71, 85, 105, 0.08);
+  --home-orbital-ring: rgba(0, 0, 0, 0.05);
+  --home-node-line: rgba(0, 0, 0, 0.1);
+  
+  background-color: var(--home-background);
+  color: var(--home-text);
+  font-family: 'Manrope', var(--font-geist), sans-serif;
+}
+
+/* Legacy fallback */
 .home-page {
   --home-primary: #13eca4;
   --home-background: #05050A;
@@ -47,8 +88,8 @@
 .home-page .bg-grid {
   background-size: 60px 60px;
   background-image: 
-    linear-gradient(to right, rgba(71, 85, 105, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(71, 85, 105, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, var(--home-grid-color, rgba(71, 85, 105, 0.05)) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--home-grid-color, rgba(71, 85, 105, 0.05)) 1px, transparent 1px);
 }
 
 /* --------------------------------------------------------------------------
@@ -80,7 +121,7 @@
  * -------------------------------------------------------------------------- */
 
 .node-line {
-  stroke: rgba(255, 255, 255, 0.05);
+  stroke: var(--home-node-line, rgba(255, 255, 255, 0.05));
   stroke-width: 1px;
   stroke-dasharray: 4 4;
   transition: all 0.5s ease;
@@ -98,7 +139,7 @@
  * -------------------------------------------------------------------------- */
 
 .orbital-ring {
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--home-orbital-ring, rgba(255, 255, 255, 0.03));
   border-radius: 50% !important;
 }
 
@@ -222,6 +263,79 @@
 
 .animate-scanline {
   animation: scanline 4s linear infinite;
+}
+
+/* --------------------------------------------------------------------------
+ * THEME TOGGLE BUTTON
+ * -------------------------------------------------------------------------- */
+
+.theme-toggle {
+  border: 1px solid var(--home-border);
+  background: var(--home-surface);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.theme-toggle:hover {
+  border-color: var(--home-accent);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+ * LIGHT MODE SPECIFIC OVERRIDES
+ * -------------------------------------------------------------------------- */
+
+.home-page.light .text-white\/40,
+.home-page.light .text-white\/60,
+.home-page.light .text-white\/90 {
+  color: var(--home-text);
+}
+
+.home-page.light .text-white\/10 {
+  color: rgba(15, 23, 42, 0.1);
+}
+
+.home-page.light .text-white {
+  color: var(--home-text);
+}
+
+.home-page.light .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.home-page.light .bg-white\/40 {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.home-page.light .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.home-page.light .drop-shadow-\[0_0_15px_rgba\(255\,255\,255\,0\.4\)\] {
+  filter: drop-shadow(0 0 15px rgba(124, 58, 237, 0.4));
+}
+
+/* Light mode glow adjustments */
+.home-page.light .bg-accent\/10 {
+  background-color: rgba(124, 58, 237, 0.08);
+}
+
+.home-page.light .bg-cyan-glow\/5 {
+  background-color: rgba(8, 145, 178, 0.06);
+}
+
+/* Light mode breathing animation */
+.home-page.light .animate-breathing {
+  animation: breathing-light 8s ease-in-out infinite;
+}
+
+@keyframes breathing-light {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.15), 0 0 40px rgba(8, 145, 178, 0.08); 
+  }
+  50% { 
+    box-shadow: 0 0 50px rgba(124, 58, 237, 0.25), 0 0 80px rgba(8, 145, 178, 0.15); 
+  }
 }
 
 /* --------------------------------------------------------------------------

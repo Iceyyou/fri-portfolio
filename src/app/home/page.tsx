@@ -5,12 +5,32 @@
  * [PROTOCOL]: Update this header on any design change
  */
 
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import "./home.css";
 
 export default function HomePage() {
+  const [isDark, setIsDark] = useState(true);
+
+  // Load saved theme preference
+  useEffect(() => {
+    const saved = localStorage.getItem("home-theme");
+    if (saved === "light") {
+      setIsDark(false);
+    }
+  }, []);
+
+  // Toggle theme and save preference
+  const toggleTheme = () => {
+    const newTheme = !isDark;
+    setIsDark(newTheme);
+    localStorage.setItem("home-theme", newTheme ? "dark" : "light");
+  };
+
   return (
-    <div className="home-page relative min-h-screen w-full overflow-hidden flex items-center justify-center font-body selection:bg-accent/30 selection:text-accent">
+    <div className={`home-page ${isDark ? "dark" : "light"} relative min-h-screen w-full overflow-hidden flex items-center justify-center font-body selection:bg-accent/30 selection:text-accent`}>
       {/* Background Grid */}
       <div className="absolute inset-[-100%] bg-grid animate-grid-move z-0 pointer-events-none"></div>
       
@@ -121,6 +141,17 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+      
+      {/* Theme Toggle Button - Top Right */}
+      <button 
+        onClick={toggleTheme}
+        className="theme-toggle fixed top-8 right-8 glass-panel-home w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform duration-300 z-50"
+        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      >
+        <span className="text-lg transition-transform duration-500" style={{ transform: isDark ? "rotate(0deg)" : "rotate(180deg)" }}>
+          {isDark ? "☀️" : "🌙"}
+        </span>
+      </button>
       
       {/* UI Overlay Info - Bottom Right */}
       <div className="fixed bottom-8 right-8 text-right pointer-events-none">
