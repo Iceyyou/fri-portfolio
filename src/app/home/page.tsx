@@ -89,8 +89,8 @@ export default function HomePage() {
               
               {/* Geometric Logo/Icon */}
               <div className="relative w-24 h-24 flex items-center justify-center">
-                <div className="absolute inset-0 border-2 border-accent/40 rounded-lg rotate-45 group-hover:rotate-90 transition-transform duration-700"></div>
-                <div className="absolute inset-2 border border-cyan-glow/30 rounded-lg -rotate-12 group-hover:rotate-12 transition-transform duration-1000"></div>
+                <div className="absolute inset-0 border-2 border-accent/40 rounded-2xl rotate-45 group-hover:rotate-90 transition-transform duration-700"></div>
+                <div className="absolute inset-2 border border-cyan-glow/30 rounded-xl -rotate-12 group-hover:rotate-12 transition-transform duration-1000"></div>
                 <span className="material-symbols-outlined text-5xl text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">grid_view</span>
               </div>
               
@@ -114,10 +114,10 @@ export default function HomePage() {
           href="/" 
           className="absolute top-[60px] flex flex-col items-center group node-container"
         >
-          <div className="glass-panel-home w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-            <span className="material-symbols-outlined text-white/60 group-hover:text-accent transition-colors">dashboard</span>
+          <div className="nav-icon-container glass-panel-home w-12 h-12 rounded-full flex items-center justify-center mb-3 opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
+            <span className="material-symbols-outlined text-accent">dashboard</span>
           </div>
-          <span className="nav-item font-mono text-[10px] tracking-[0.2em] uppercase text-muted">Dashboard</span>
+          <span className="nav-item font-mono text-[10px] tracking-[0.2em] uppercase text-muted group-hover:text-accent transition-colors">Dashboard</span>
         </Link>
         
         {/* LOGS / CONTENT (Bottom Left) */}
@@ -125,10 +125,10 @@ export default function HomePage() {
           href="/daily" 
           className="absolute bottom-[180px] left-[80px] flex flex-col items-center group node-container"
         >
-          <div className="glass-panel-home w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-            <span className="material-symbols-outlined text-white/60 group-hover:text-accent transition-colors">terminal</span>
+          <div className="nav-icon-container glass-panel-home w-12 h-12 rounded-full flex items-center justify-center mb-3 opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
+            <span className="material-symbols-outlined text-accent">terminal</span>
           </div>
-          <span className="nav-item font-mono text-[10px] tracking-[0.2em] uppercase text-muted">Logs</span>
+          <span className="nav-item font-mono text-[10px] tracking-[0.2em] uppercase text-muted group-hover:text-accent transition-colors">Logs</span>
         </Link>
         
         {/* CONTACT (Bottom Right) */}
@@ -136,10 +136,10 @@ export default function HomePage() {
           href="#contact" 
           className="absolute bottom-[180px] right-[80px] flex flex-col items-center group node-container"
         >
-          <div className="glass-panel-home w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-            <span className="material-symbols-outlined text-white/60 group-hover:text-accent transition-colors">alternate_email</span>
+          <div className="nav-icon-container glass-panel-home w-12 h-12 rounded-full flex items-center justify-center mb-3 opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
+            <span className="material-symbols-outlined text-accent">alternate_email</span>
           </div>
-          <span className="nav-item font-mono text-[10px] tracking-[0.2em] uppercase text-muted">Contact</span>
+          <span className="nav-item font-mono text-[10px] tracking-[0.2em] uppercase text-muted group-hover:text-accent transition-colors">Contact</span>
         </Link>
       </div>
       
@@ -162,8 +162,8 @@ export default function HomePage() {
         className="theme-toggle fixed top-8 right-8 glass-panel-home w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform duration-300 z-50"
         aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       >
-        <span className="text-lg transition-transform duration-500" style={{ transform: isDark ? "rotate(0deg)" : "rotate(180deg)" }}>
-          {isDark ? "☀️" : "🌙"}
+        <span className="material-symbols-outlined text-white/60 hover:text-accent transition-colors">
+          {isDark ? "light_mode" : "dark_mode"}
         </span>
       </button>
       
