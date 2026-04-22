@@ -346,6 +346,13 @@
  * -------------------------------------------------------------------------- */
 
 @media (max-width: 767px) {
+  /* 禁止页面滚动 */
+  .home-page {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+  }
+  
   .home-page .w-\[700px\] {
     width: 100vw;
     height: 100vh;
@@ -378,5 +385,10 @@
   
   .home-page .right-\[80px\] {
     right: 40px;
+  }
+  
+  /* 固定角落 UI */
+  .home-page .fixed {
+    position: fixed;
   }
 }
