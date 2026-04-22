@@ -66,19 +66,19 @@
 }
 
 /* --------------------------------------------------------------------------
- * FONTS
+ * FONTS - Using next/font CSS variables
  * -------------------------------------------------------------------------- */
 
 .font-display {
-  font-family: 'Space Grotesk', var(--font-geist), sans-serif;
+  font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
 }
 
 .font-body {
-  font-family: 'Manrope', var(--font-geist), sans-serif;
+  font-family: var(--font-manrope), 'Manrope', sans-serif;
 }
 
 .font-mono {
-  font-family: 'JetBrains Mono', var(--font-geist), monospace;
+  font-family: var(--font-jetbrains-mono), 'JetBrains Mono', monospace;
 }
 
 /* --------------------------------------------------------------------------

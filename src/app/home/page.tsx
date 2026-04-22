@@ -32,13 +32,7 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Google Fonts and Material Symbols */}
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link 
-        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Space+Grotesk:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" 
-        rel="stylesheet" 
-      />
+      {/* Material Symbols - icons only, fonts loaded via layout.tsx */}
       <link 
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" 
         rel="stylesheet" 
@@ -87,11 +81,18 @@ export default function HomePage() {
               {/* Inner Reflection Layer */}
               <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none"></div>
               
-              {/* Geometric Logo/Icon */}
+              {/* AI Core Video */}
               <div className="relative w-24 h-24 flex items-center justify-center">
-                <div className="absolute inset-0 border-2 border-accent/40 rounded-[16px] rotate-45 group-hover:rotate-90 transition-transform duration-700"></div>
-                <div className="absolute inset-2 border border-cyan-glow/30 rounded-[12px] -rotate-12 group-hover:rotate-12 transition-transform duration-1000"></div>
-                <span className="material-symbols-outlined text-5xl text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">grid_view</span>
+                <div className="absolute inset-[-8px] border-2 border-accent/40 rounded-[16px] rotate-45 group-hover:rotate-90 transition-transform duration-700"></div>
+                <div className="absolute inset-[-4px] border border-cyan-glow/30 rounded-[12px] -rotate-12 group-hover:rotate-12 transition-transform duration-1000"></div>
+                <video
+                  src="/core.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-20 h-20 object-cover rounded-full"
+                />
               </div>
               
               {/* Identity Label */}

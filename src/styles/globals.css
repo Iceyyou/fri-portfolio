@@ -23,6 +23,7 @@
 .home-page .rounded-\[12px\] { border-radius: 12px !important; }
 .home-page .rounded-full { border-radius: 9999px !important; }
 .home-page .orbital-ring { border-radius: 50% !important; }
+.home-page video.rounded-full { border-radius: 9999px !important; }
 
 /* --------------------------------------------------------------------------
  * THEME — brand tokens exposed to Tailwind utilities
