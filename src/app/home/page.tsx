@@ -116,7 +116,7 @@ export default function HomePage() {
           className="absolute top-[60px] flex flex-col items-center group node-container"
         >
           <span className="material-symbols-outlined text-accent mb-3 opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">dashboard</span>
-          <span className="nav-item font-mono text-[10px] tracking-[0.2em] uppercase text-muted group-hover:text-accent transition-colors">Dashboard</span>
+          <span className="nav-item font-mono text-xs tracking-[0.2em] uppercase text-muted group-hover:text-accent transition-colors">Dashboard</span>
         </Link>
         
         {/* LOGS / CONTENT (Bottom Left) */}
@@ -125,7 +125,7 @@ export default function HomePage() {
           className="absolute bottom-[180px] left-[80px] flex flex-col items-center group node-container"
         >
           <span className="material-symbols-outlined text-accent mb-3 opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">terminal</span>
-          <span className="nav-item font-mono text-[10px] tracking-[0.2em] uppercase text-muted group-hover:text-accent transition-colors">Logs</span>
+          <span className="nav-item font-mono text-xs tracking-[0.2em] uppercase text-muted group-hover:text-accent transition-colors">Logs</span>
         </Link>
         
         {/* CONTACT (Bottom Right) */}
@@ -134,7 +134,7 @@ export default function HomePage() {
           className="absolute bottom-[180px] right-[80px] flex flex-col items-center group node-container"
         >
           <span className="material-symbols-outlined text-accent mb-3 opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">alternate_email</span>
-          <span className="nav-item font-mono text-[10px] tracking-[0.2em] uppercase text-muted group-hover:text-accent transition-colors">Contact</span>
+          <span className="nav-item font-mono text-xs tracking-[0.2em] uppercase text-muted group-hover:text-accent transition-colors">Contact</span>
         </Link>
       </div>
       
