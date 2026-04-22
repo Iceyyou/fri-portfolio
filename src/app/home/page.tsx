@@ -8,6 +8,7 @@
 "use client";
 
 import Link from "next/link";
+import Head from "next/head";
 import { useState, useEffect } from "react";
 import "./home.css";
 
@@ -30,7 +31,20 @@ export default function HomePage() {
   };
 
   return (
-    <div className={`home-page ${isDark ? "dark" : "light"} relative min-h-screen w-full overflow-hidden flex items-center justify-center font-body selection:bg-accent/30 selection:text-accent`}>
+    <>
+      {/* Google Fonts and Material Symbols */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link 
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Space+Grotesk:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" 
+        rel="stylesheet" 
+      />
+      <link 
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" 
+        rel="stylesheet" 
+      />
+      
+      <div className={`home-page ${isDark ? "dark" : "light"} relative min-h-screen w-full overflow-hidden flex items-center justify-center font-body selection:bg-accent/30 selection:text-accent`}>
       {/* Background Grid */}
       <div className="absolute inset-[-100%] bg-grid animate-grid-move z-0 pointer-events-none"></div>
       
@@ -69,7 +83,7 @@ export default function HomePage() {
         {/* Central Identity Card */}
         <div className="relative z-30 group cursor-pointer animate-float">
           <Link href="/" className="block">
-            <div className="tilt-card glass-panel-home w-48 h-48 rounded-2xl flex flex-col items-center justify-center shadow-2xl animate-breathing border-white/10 overflow-hidden">
+            <div className="tilt-card glass-panel-home w-48 h-48 rounded-3xl flex flex-col items-center justify-center shadow-2xl animate-breathing border-white/10 overflow-hidden">
               {/* Inner Reflection Layer */}
               <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none"></div>
               
@@ -77,7 +91,7 @@ export default function HomePage() {
               <div className="relative w-24 h-24 flex items-center justify-center">
                 <div className="absolute inset-0 border-2 border-accent/40 rounded-lg rotate-45 group-hover:rotate-90 transition-transform duration-700"></div>
                 <div className="absolute inset-2 border border-cyan-glow/30 rounded-lg -rotate-12 group-hover:rotate-12 transition-transform duration-1000"></div>
-                <span className="material-icon text-5xl text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">◇</span>
+                <span className="material-symbols-outlined text-5xl text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">grid_view</span>
               </div>
               
               {/* Identity Label */}
@@ -89,7 +103,7 @@ export default function HomePage() {
           </Link>
           
           {/* Scanline Effect */}
-          <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden rounded-2xl opacity-20">
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden rounded-3xl opacity-20">
             <div className="w-full h-[2px] bg-white/40 absolute top-0 animate-scanline"></div>
           </div>
         </div>
@@ -101,7 +115,7 @@ export default function HomePage() {
           className="absolute top-[60px] flex flex-col items-center group node-container"
         >
           <div className="glass-panel-home w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-            <span className="text-white/60 group-hover:text-accent transition-colors text-xl">⊞</span>
+            <span className="material-symbols-outlined text-white/60 group-hover:text-accent transition-colors">dashboard</span>
           </div>
           <span className="nav-item font-mono text-[10px] tracking-[0.2em] uppercase text-muted">Dashboard</span>
         </Link>
@@ -112,7 +126,7 @@ export default function HomePage() {
           className="absolute bottom-[180px] left-[80px] flex flex-col items-center group node-container"
         >
           <div className="glass-panel-home w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-            <span className="text-white/60 group-hover:text-accent transition-colors text-xl">⌘</span>
+            <span className="material-symbols-outlined text-white/60 group-hover:text-accent transition-colors">terminal</span>
           </div>
           <span className="nav-item font-mono text-[10px] tracking-[0.2em] uppercase text-muted">Logs</span>
         </Link>
@@ -123,7 +137,7 @@ export default function HomePage() {
           className="absolute bottom-[180px] right-[80px] flex flex-col items-center group node-container"
         >
           <div className="glass-panel-home w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-            <span className="text-white/60 group-hover:text-accent transition-colors text-xl">@</span>
+            <span className="material-symbols-outlined text-white/60 group-hover:text-accent transition-colors">alternate_email</span>
           </div>
           <span className="nav-item font-mono text-[10px] tracking-[0.2em] uppercase text-muted">Contact</span>
         </Link>
@@ -161,6 +175,7 @@ export default function HomePage() {
           © 2026 FRI LABS
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
