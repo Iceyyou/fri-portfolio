@@ -14,7 +14,7 @@
 .home-page.dark {
   --home-primary: #13eca4;
   --home-background: #05050A;
-  --home-surface: rgba(15, 15, 20, 0.9);
+  --home-surface: rgba(59, 59, 59, 0.4);
   --home-border: rgba(255, 255, 255, 0.04);
   --home-muted: #94a3b8;
   --home-accent: #7C3AED;
@@ -34,7 +34,7 @@
 .home-page.light {
   --home-primary: #059669;
   --home-background: #e8eaf0;
-  --home-surface: #FFFFFF;
+  --home-surface: rgba(232, 234, 240, 1);
   --home-border: rgba(0, 0, 0, 0.05);
   --home-muted: #64748B;
   --home-accent: #7C3AED;
@@ -54,7 +54,7 @@
 .home-page {
   --home-primary: #13eca4;
   --home-background: #05050A;
-  --home-surface: rgba(15, 15, 20, 0.9);
+  --home-surface: rgba(59, 59, 59, 0.4);
   --home-border: rgba(255, 255, 255, 0.04);
   --home-muted: #94a3b8;
   --home-accent: #7C3AED;
