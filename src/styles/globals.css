@@ -17,6 +17,12 @@
 .status-dot, .arc-video, .arc-ring {
   border-radius: 50% !important;
 }
+/* exceptions: home page elements need rounded corners */
+.home-page .rounded-\[24px\] { border-radius: 24px !important; }
+.home-page .rounded-\[16px\] { border-radius: 16px !important; }
+.home-page .rounded-\[12px\] { border-radius: 12px !important; }
+.home-page .rounded-full { border-radius: 9999px !important; }
+.home-page .orbital-ring { border-radius: 50% !important; }
 
 /* --------------------------------------------------------------------------
  * THEME — brand tokens exposed to Tailwind utilities
