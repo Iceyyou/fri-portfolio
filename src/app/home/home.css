@@ -371,20 +371,21 @@
     display: none;
   }
   
+  /* 导航节点位置 - 往中心靠近 */
   .home-page .top-\[60px\] {
-    top: 80px;
+    top: 120px;
   }
   
   .home-page .bottom-\[180px\] {
-    bottom: 120px;
+    bottom: 160px;
   }
   
   .home-page .left-\[80px\] {
-    left: 40px;
+    left: 60px;
   }
   
   .home-page .right-\[80px\] {
-    right: 40px;
+    right: 60px;
   }
   
   /* 固定角落 UI */
