@@ -14,14 +14,14 @@
 .home-page.dark {
   --home-primary: #13eca4;
   --home-background: #05050A;
-  --home-surface: rgba(10, 10, 15, 0.6);
+  --home-surface: rgba(20, 20, 30, 0.75);
   --home-border: rgba(255, 255, 255, 0.08);
-  --home-muted: #475569;
+  --home-muted: #94a3b8;
   --home-accent: #7C3AED;
   --home-cyan-glow: #00f2ff;
-  --home-text: #F8FAFC;
-  --home-text-secondary: rgba(255, 255, 255, 0.4);
-  --home-grid-color: rgba(71, 85, 105, 0.05);
+  --home-text: #FFFFFF;
+  --home-text-secondary: rgba(255, 255, 255, 0.6);
+  --home-grid-color: rgba(71, 85, 105, 0.15);
   --home-orbital-ring: rgba(255, 255, 255, 0.03);
   --home-node-line: rgba(255, 255, 255, 0.05);
   
@@ -34,7 +34,7 @@
 .home-page.light {
   --home-primary: #059669;
   --home-background: #f6f8f7;
-  --home-surface: rgba(255, 255, 255, 0.85);
+  --home-surface: rgba(255, 255, 255, 0.50);
   --home-border: rgba(0, 0, 0, 0.06);
   --home-muted: #64748B;
   --home-accent: #7C3AED;
@@ -54,14 +54,14 @@
 .home-page {
   --home-primary: #13eca4;
   --home-background: #05050A;
-  --home-surface: rgba(10, 10, 15, 0.6);
+  --home-surface: rgba(20, 20, 30, 0.75);
   --home-border: rgba(255, 255, 255, 0.08);
-  --home-muted: #475569;
+  --home-muted: #94a3b8;
   --home-accent: #7C3AED;
   --home-cyan-glow: #00f2ff;
   
   background-color: var(--home-background);
-  color: #F8FAFC;
+  color: #FFFFFF;
   font-family: 'Manrope', var(--font-geist), sans-serif;
 }
 
