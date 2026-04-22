@@ -33,15 +33,15 @@
 /* Light Mode */
 .home-page.light {
   --home-primary: #059669;
-  --home-background: #F8FAFC;
-  --home-surface: rgba(255, 255, 255, 0.8);
-  --home-border: rgba(0, 0, 0, 0.08);
+  --home-background: #f6f8f7;
+  --home-surface: rgba(10, 10, 15, 0.6);
+  --home-border: rgba(255, 255, 255, 0.08);
   --home-muted: #64748B;
   --home-accent: #7C3AED;
   --home-cyan-glow: #00d4e6;
   --home-text: #0F172A;
   --home-text-secondary: rgba(0, 0, 0, 0.5);
-  --home-grid-color: rgba(71, 85, 105, 0.08);
+  --home-grid-color: rgba(71, 85, 105, 0.03);
   --home-orbital-ring: rgba(0, 0, 0, 0.05);
   --home-node-line: rgba(0, 0, 0, 0.1);
   
@@ -295,30 +295,9 @@
  * LIGHT MODE SPECIFIC OVERRIDES
  * -------------------------------------------------------------------------- */
 
-.home-page.light .text-white\/40,
-.home-page.light .text-white\/60,
-.home-page.light .text-white\/90 {
-  color: var(--home-text);
-}
-
-.home-page.light .text-white\/10 {
-  color: rgba(15, 23, 42, 0.1);
-}
-
-.home-page.light .text-white {
-  color: var(--home-text);
-}
-
-.home-page.light .border-white\/10 {
-  border-color: rgba(0, 0, 0, 0.1);
-}
-
-.home-page.light .bg-white\/40 {
-  background-color: rgba(0, 0, 0, 0.2);
-}
-
-.home-page.light .bg-white\/5 {
-  background-color: rgba(0, 0, 0, 0.03);
+/* Light mode: card content stays white because surface is dark */
+.home-page.light .glass-panel-home {
+  color: #F8FAFC;
 }
 
 .home-page.light .drop-shadow-\[0_0_15px_rgba\(255\,255\,255\,0\.4\)\] {
