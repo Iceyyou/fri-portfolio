@@ -14,8 +14,8 @@
 .home-page.dark {
   --home-primary: #13eca4;
   --home-background: #05050A;
-  --home-surface: rgba(30, 30, 40, 0.85);
-  --home-border: rgba(255, 255, 255, 0.12);
+  --home-surface: rgba(15, 15, 20, 0.9);
+  --home-border: rgba(255, 255, 255, 0.04);
   --home-muted: #94a3b8;
   --home-accent: #7C3AED;
   --home-cyan-glow: #00f2ff;
@@ -33,15 +33,15 @@
 /* Light Mode */
 .home-page.light {
   --home-primary: #059669;
-  --home-background: #f4f5f7;
-  --home-surface: rgba(255, 255, 255, 0.95);
-  --home-border: rgba(0, 0, 0, 0.08);
+  --home-background: #e8eaf0;
+  --home-surface: #FFFFFF;
+  --home-border: rgba(0, 0, 0, 0.05);
   --home-muted: #64748B;
   --home-accent: #7C3AED;
   --home-cyan-glow: #00d4e6;
   --home-text: #0F172A;
   --home-text-secondary: rgba(0, 0, 0, 0.5);
-  --home-grid-color: rgba(71, 85, 105, 0.06);
+  --home-grid-color: rgba(100, 120, 180, 0.08);
   --home-orbital-ring: rgba(0, 0, 0, 0.05);
   --home-node-line: rgba(0, 0, 0, 0.1);
   
@@ -54,8 +54,8 @@
 .home-page {
   --home-primary: #13eca4;
   --home-background: #05050A;
-  --home-surface: rgba(30, 30, 40, 0.85);
-  --home-border: rgba(255, 255, 255, 0.12);
+  --home-surface: rgba(15, 15, 20, 0.9);
+  --home-border: rgba(255, 255, 255, 0.04);
   --home-muted: #94a3b8;
   --home-accent: #7C3AED;
   --home-cyan-glow: #00f2ff;
