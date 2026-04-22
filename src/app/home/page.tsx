@@ -83,8 +83,8 @@ export default function HomePage() {
               
               {/* AI Core Video */}
               <div className="relative w-24 h-24 flex items-center justify-center">
-                <div className="absolute inset-[-8px] border-2 border-accent/40 rounded-[16px] rotate-45 group-hover:rotate-90 transition-transform duration-700"></div>
-                <div className="absolute inset-[-4px] border border-cyan-glow/30 rounded-[12px] -rotate-12 group-hover:rotate-12 transition-transform duration-1000"></div>
+                <div className="absolute inset-0 border-2 border-accent/40 rounded-[16px] rotate-45 group-hover:rotate-90 transition-transform duration-700"></div>
+                <div className="absolute inset-2 border border-cyan-glow/30 rounded-[12px] -rotate-12 group-hover:rotate-12 transition-transform duration-1000"></div>
                 <video
                   src="/core.mp4"
                   autoPlay
