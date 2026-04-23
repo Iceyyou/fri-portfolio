@@ -34,7 +34,7 @@
 .home-page.light {
   --home-primary: #059669;
   --home-background: #f6f7f8;
-  --home-surface: rgba(236, 238, 247, 1);
+  --home-surface: rgba(246, 247, 248, 0.25);
   --home-border: rgba(0, 0, 0, 0.05);
   --home-muted: #475569;
   --home-accent: #7C3AED;
