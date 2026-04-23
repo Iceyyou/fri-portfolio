@@ -311,11 +311,11 @@
 
 /* Light mode - 光晕改为淡紫淡蓝色 */
 .home-page.light .bg-accent\/10 {
-  background-color: rgba(180, 140, 255, 0.08);  /* 淡紫色 */
+  background-color: rgba(160, 100, 255, 0.18);  /* 淡紫色 - 加深 */
 }
 
 .home-page.light .bg-cyan-glow\/5 {
-  background-color: rgba(100, 200, 255, 0.06);  /* 淡蓝色 */
+  background-color: rgba(80, 180, 255, 0.14);  /* 淡蓝色 - 加深 */
 }
 
 /* Light mode breathing animation */
