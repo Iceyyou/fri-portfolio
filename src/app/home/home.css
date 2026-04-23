@@ -342,7 +342,7 @@
 }
 
 /* --------------------------------------------------------------------------
- * MOBILE RESPONSIVE
+ * MOBILE RESPONSIVE (max-width: 767px)
  * -------------------------------------------------------------------------- */
 
 @media (max-width: 767px) {
@@ -358,11 +358,6 @@
     height: 100vh;
   }
   
-  .home-page .w-48 {
-    width: 10rem;
-    height: 10rem;
-  }
-  
   .home-page .orbital-ring {
     display: none;
   }
@@ -371,7 +366,7 @@
     display: none;
   }
   
-  /* 导航节点位置 - 往中心靠近 */
+  /* 导航节点位置 - 移动端往中心靠近 */
   .home-page .top-\[60px\] {
     top: 120px;
   }
@@ -391,5 +386,34 @@
   /* 固定角落 UI */
   .home-page .fixed {
     position: fixed;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * PC RESPONSIVE (min-width: 768px) - 确保 PC 端使用设计稿原始值
+ * -------------------------------------------------------------------------- */
+
+@media (min-width: 768px) {
+  /* 强制 PC 端使用原始卡片尺寸 */
+  .home-page .w-48 {
+    width: 12rem !important;
+    height: 12rem !important;
+  }
+  
+  /* 强制 PC 端使用原始导航位置 */
+  .home-page .top-\[60px\] {
+    top: 60px !important;
+  }
+  
+  .home-page .bottom-\[180px\] {
+    bottom: 180px !important;
+  }
+  
+  .home-page .left-\[80px\] {
+    left: 80px !important;
+  }
+  
+  .home-page .right-\[80px\] {
+    right: 80px !important;
   }
 }
