@@ -309,13 +309,10 @@
   filter: drop-shadow(0 0 15px rgba(124, 58, 237, 0.4));
 }
 
-/* Light mode glow adjustments - 增强蓝绿双色光晕 */
-.home-page.light .bg-accent\/10 {
-  background-color: rgba(124, 58, 237, 0.12);
-}
-
+/* Light mode - 隐藏光晕效果，保持背景干净 */
+.home-page.light .bg-accent\/10,
 .home-page.light .bg-cyan-glow\/5 {
-  background-color: rgba(0, 212, 230, 0.10);
+  display: none;
 }
 
 /* Light mode breathing animation */
