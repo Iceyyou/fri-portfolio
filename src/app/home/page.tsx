@@ -142,7 +142,7 @@ export default function HomePage() {
       <div className="fixed top-8 left-8 flex items-start gap-4 pointer-events-none">
         <div className="h-12 w-[1px] bg-accent/30 mt-1"></div>
         <div className="font-mono text-[10px] text-muted space-y-1">
-          <div className="text-white/40 font-bold">IDENTITY PROTOCOL</div>
+          <div className="font-bold" style={{ color: 'var(--home-text-secondary)' }}>IDENTITY PROTOCOL</div>
           <div>VER // 3.28_NEXUS</div>
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
@@ -164,7 +164,7 @@ export default function HomePage() {
       
       {/* UI Overlay Info - Bottom Right */}
       <div className="fixed bottom-8 right-8 text-right pointer-events-none">
-        <div className="font-display text-2xl font-bold tracking-tighter text-white/10 mb-2">FRI INTERFACE</div>
+        <div className="font-display text-2xl font-bold tracking-tighter mb-2" style={{ color: 'var(--home-text-secondary)', opacity: 0.3 }}>FRI INTERFACE</div>
         <div className="font-mono text-[10px] text-muted tracking-widest">
           ENCRYPTED SESSION // SECTOR_7G<br/>
           © 2026 FRI LABS
