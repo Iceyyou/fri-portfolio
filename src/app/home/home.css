@@ -33,12 +33,12 @@
 /* Light Mode */
 .home-page.light {
   --home-primary: #059669;
-  --home-background: #e8eaf0;
-  --home-surface: rgba(232, 234, 240, 1);
+  --home-background: #f6f7f8;
+  --home-surface: rgba(236, 238, 247, 1);
   --home-border: rgba(0, 0, 0, 0.05);
-  --home-muted: #64748B;
+  --home-muted: #475569;
   --home-accent: #7C3AED;
-  --home-cyan-glow: #00d4e6;
+  --home-cyan-glow: #00f2ff;
   --home-text: #0F172A;
   --home-text-secondary: rgba(0, 0, 0, 0.5);
   --home-grid-color: rgba(100, 120, 180, 0.08);
